@@ -3,13 +3,15 @@
 #include "SPI.h"
 #include "Protocol.h"
 #include <WiFi.h>
-#include <HTTPClient.h>
+#include <AsyncTCP.h>
+#include <ESPAsyncWebServer.h>
+
 
 JsonObject j_son;
 Model* ImpModel;
 DynamicJsonDocument jsonDoc(2048);
 WiFiClient client;
-HTTPClient http;
+
 
 const char* ssid     = "Net_437027";
 const char* password = "123456789";
@@ -19,14 +21,16 @@ const char* password = "123456789";
 #define  SD_MISO_PIN  19
 #define  SD_SCK_PIN  18
 
+AsyncWebServer server(80);
+AsyncWebSocket ws("/ws");
+
 void setup() {
   Serial.begin(115200);
-  SD.begin();
+  SD.begin();  
 
-   WiFi.begin(ssid,password);
-
+  WiFi.begin(ssid, password);
+  
   while (WiFi.status() != WL_CONNECTED) {
-
   }
 
   ImpModel = new Model("/sd/raven");
@@ -80,9 +84,11 @@ void loop() {
 
        delay(100);
       
-      if(Response==ACK){
+      String Response = Serial.readStringUntil('\n');
 
-        Response=0;
+      if(Response.equals(NEXT)){
+
+        
 
         if(!Img_Sent){
           PostImage(*ImpModel);
