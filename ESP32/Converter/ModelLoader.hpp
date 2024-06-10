@@ -1,7 +1,7 @@
 #ifndef MODEL_LOADER
 #define MODEL_LOADER
 
-#define IMAGE_CHANNELS 4
+
 #define SAMPLES_PER_BLOCK 28
 #define DIVISOR 5
 #define MIN_INT_4 -8
@@ -14,22 +14,14 @@ const int16_t rounding_table[4] = { 2,3,7,8 };
 #include "FixedPointMath.h"
 #include <ArduinoJson.h>
 
-struct Texel{
-
-uint8_t R;
-uint8_t G;
-uint8_t B;
-uint8_t A;
-
-Texel(uint16_t Input);
-
-};
 
 struct Image{
 
 uint16_t Width;
 uint16_t Height;
-uint8_t* Data;
+uint16_t* Data;
+
+Image(const char* fileName);
 
 };
 
@@ -40,6 +32,8 @@ uint16_t SampleRate;
 uint32_t SampleCount;
 
 int16_t* Data;
+
+Sound(const char* fileName);
 
 };
 
@@ -66,6 +60,8 @@ float S_Init[3];
 
 std::vector<uint8_t> Children;
 
+bool Root;
+
 };
 
 struct Mesh{
@@ -86,11 +82,6 @@ public:
 std::vector<Animation>Tracks;
 std::vector<Mesh>Meshes;
 std::vector<Bone>Bones;
-
-Image Texture;
-Sound SFX;
-
-uint8_t Root;
 
 Model(const char* fileName);
 

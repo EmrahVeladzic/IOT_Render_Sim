@@ -1,7 +1,13 @@
 #ifndef PROTOCOL
 #define PROTOCOL
 
-#define NEXT "NEXT"
+#define NEXT "R_REQ"
+
+#define RDY "R_READY"
+#define SWITCH "R_SWITCH"
+
+#define WAIT 1000
+#define S_WAIT 100
 
 extern volatile bool Ready = false;
 

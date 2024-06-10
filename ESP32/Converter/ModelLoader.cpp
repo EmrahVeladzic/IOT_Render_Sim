@@ -2,72 +2,65 @@
 #include <fstream>
 #include "ModelLoader.hpp"
 
-Texel::Texel(uint16_t Input){
-  
-A = ((Input >> 0) & 0x1) * 0xFF;
-R = ((Input >> 1) & 0x1F) * 0x8;
-G = ((Input >> 6) & 0x1F) * 0x8;
-B = ((Input >> 11) & 0x1F) * 0x8;
-
-}
 
 
-void LoadRPF(const char* fileName, Model & Owner){
+Image::Image(const char* fileName){
   uint8_t tempUByte;
   uint16_t tempUShort;
-  std::vector<Texel>CLUT;
+  std::vector<uint16_t>CLUT;
+
+  std::string imgFile = std::string(fileName) + ".rpf";
 
   std::ifstream ImgStream;
-  ImgStream.open(fileName,std::ios::binary);
+  ImgStream.open(imgFile,std::ios::binary);
   ImgStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
   ImgStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
   uint16_t txl_count = tempUByte +1;
 
   ImgStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
-  Owner.Texture.Width=((uint16_t)tempUByte)+1;
+  this->Width=((uint16_t)tempUByte)+1;
 
   ImgStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
-  Owner.Texture.Height=((uint16_t)tempUByte)+1;
+  this->Height=((uint16_t)tempUByte)+1;
 
   for(uint16_t i = 0; i<= txl_count; i++)
     {
       ImgStream.read(reinterpret_cast<char*>(&tempUShort), sizeof(tempUShort));
 
-      CLUT.push_back(Texel(tempUShort));
+      CLUT.push_back(tempUShort);
     }
     
-  size_t arr_size = (size_t)Owner.Texture.Width * (size_t)Owner.Texture.Height * 4;
-  Owner.Texture.Data = new uint8_t[arr_size];
+  size_t arr_size = (size_t)this->Width * (size_t)this->Height;
+  this->Data = new uint16_t[arr_size];
 
   uint8_t lsb;
   uint8_t msb;
+    
+  for(size_t i = 0; i < arr_size; i+=2)
+  {
+    ImgStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
-  for(size_t i = 0; i < arr_size; i+=8)
+    msb = (tempUByte>>4)&0xF;
+    lsb = (tempUByte)&0xF;
 
-    {
-      ImgStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
-
-      lsb = tempUByte & 0xF;
-      msb = (tempUByte>>4) & 0xF;
-
-      Owner.Texture.Data[i]=CLUT[msb].R;
-      Owner.Texture.Data[i+1]=CLUT[msb].G;
-      Owner.Texture.Data[i+2]=CLUT[msb].B;
-      Owner.Texture.Data[i+3]=CLUT[msb].A;
-
-      Owner.Texture.Data[i+4]=CLUT[lsb].R;
-      Owner.Texture.Data[i+5]=CLUT[lsb].G;
-      Owner.Texture.Data[i+6]=CLUT[lsb].B;
-      Owner.Texture.Data[i+7]=CLUT[lsb].A;
-
-    }
+    this->Data[i]=CLUT[msb];
+     this->Data[i+1]=CLUT[lsb];
 
   }
+    
+  CLUT.clear();
+  ImgStream.close();
+
+}
+  
 
 
-void LoadWL(const char* fileName, Model & Owner)
+
+Sound::Sound(const char* fileName)
 {
+  std::string sfxFile = std::string(fileName) + ".wl";
+
   int16_t temp16 = 0;
   uint8_t sh_val = 0;
   int16_t old = 0;
@@ -80,21 +73,31 @@ void LoadWL(const char* fileName, Model & Owner)
   uint16_t tempUShort;
   uint32_t tempUInt;
 
+ 
+
   std::ifstream SfxStream;
-  SfxStream.open(fileName,std::ios::binary);
+  SfxStream.open(sfxFile,std::ios::binary);
 
   SfxStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
   SfxStream.read(reinterpret_cast<char*>(&tempUInt), sizeof(tempUInt));
-  Owner.SFX.SampleCount=(tempUInt*SAMPLES_PER_BLOCK);
+  this->SampleCount=(tempUInt*SAMPLES_PER_BLOCK);
 
   SfxStream.read(reinterpret_cast<char*>(&tempUShort), sizeof(tempUShort));
 
-  Owner.SFX.SampleRate=tempUShort;
-  Owner.SFX.Data = new int16_t[(tempUInt* SAMPLES_PER_BLOCK)];
+  this->SampleRate=tempUShort;
 
-  for(uint32_t i =0; i< tempUInt; i++)
-    {
+
+ 
+
+
+  this->Data = new int16_t [this->SampleCount];
+
+
+
+  for(uint32_t i =0; i< tempUInt ; i++){
+
+
     SfxStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
     sh_val = (tempUByte >> 4) &0xF;
 
@@ -119,12 +122,14 @@ void LoadWL(const char* fileName, Model & Owner)
       temp16-=old;
 
       out = 0;
-      out += ((int32_t)oldest * rounding_table[0] / DIVISOR);
-      out += ((int32_t)older * rounding_table[1] / DIVISOR);
-      out += ((int32_t)old * rounding_table[2] / DIVISOR);
-      out += ((int32_t)temp16 * rounding_table[3] / DIVISOR);
+      out +=  (int16_t)((int32_t)oldest * rounding_table[0] / DIVISOR);
+      out +=  (int16_t)((int32_t)older * rounding_table[1] / DIVISOR);
+      out +=  (int16_t)((int32_t)old * rounding_table[2] / DIVISOR);
+      out +=  (int16_t)((int32_t)temp16 * rounding_table[3] / DIVISOR);
 
-      Owner.SFX.Data[((i*SAMPLES_PER_BLOCK)+j)]=out;
+
+
+      this->Data[((i*SAMPLES_PER_BLOCK)+j)]=out;
 
       oldest=older;
       older=old;
@@ -148,20 +153,26 @@ void LoadWL(const char* fileName, Model & Owner)
       temp16-=old;
 
       out = 0;
-      out += ((int32_t)oldest * rounding_table[0] / DIVISOR);
-      out += ((int32_t)older * rounding_table[1] / DIVISOR);
-      out += ((int32_t)old * rounding_table[2] / DIVISOR);
-      out += ((int32_t)temp16 * rounding_table[3] / DIVISOR);
+      out +=  (int16_t)((int32_t)oldest * rounding_table[0] / DIVISOR);
+      out +=  (int16_t)((int32_t)older * rounding_table[1] / DIVISOR);
+      out +=  (int16_t)((int32_t)old * rounding_table[2] / DIVISOR);
+      out +=  (int16_t)((int32_t)temp16 * rounding_table[3] / DIVISOR);
 
-      Owner.SFX.Data[((i*SAMPLES_PER_BLOCK)+j+1)]=out;
+      this->Data[((i*SAMPLES_PER_BLOCK)+j+1)]=out;
 
       oldest=older;
       older=old;
       old=temp16;
 
+       
+
     }
 
   }
+
+  
+
+  SfxStream.close();
 
 }
 
@@ -176,10 +187,6 @@ Model::Model(const char* fileName){
   Animation tempAnim;
 
 
-
-  std::string imgFile = std::string(fileName) + ".rpf";
-  std::string sfxFile = std::string(fileName) + ".wl";
-
   std::string vtFile = std::string(fileName) + ".vt";
   std::string indFile = std::string(fileName) + ".ind";
   std::string uvFile = std::string(fileName) + ".uv";
@@ -187,8 +194,6 @@ Model::Model(const char* fileName){
   std::string fkrFile = std::string(fileName) + ".fkr";
   std::string anmFile = std::string(fileName) + ".anm";
     
-  LoadRPF(imgFile.c_str(), *this);
-  LoadWL(sfxFile.c_str(), *this);
 
   std::ifstream vtStream;
 
@@ -432,10 +437,7 @@ for (uint8_t i = 0; i < (uint8_t)boneCount; i++)
     }
   }
 
-  if(IsRoot){
-    this->Root=i;
-    break;
-  }
+  this->Bones[i].Root=IsRoot;
 }
 
 	std::ifstream anmStream;
@@ -623,22 +625,20 @@ for (uint8_t i = 0; i < (uint8_t)boneCount; i++)
 }
 
 
-
-
-
-
-
-
 JsonObject  SerializeImage(Image& Img, JsonObject & json){
+  json["Type"]="Texture";
+
   json["Width"]=Img.Width;
   json["Height"]=Img.Height;
   json.createNestedArray("Data");
-  for(size_t i = 0; i < ((Img.Width*Img.Height)*IMAGE_CHANNELS);i++){
+  for(size_t i = 0; i < (Img.Width*Img.Height);i++){
     json["Data"].add(Img.Data[i]);
   }
   return json;
 }
 JsonObject  SerializeSound(Sound& Sfx, JsonObject & json){
+  json["Type"]="SFX";
+
   json["SampleRate"]=Sfx.SampleRate;
   json["SampleCount"]=Sfx.SampleCount;
   json.createNestedArray("Data");
@@ -648,6 +648,8 @@ JsonObject  SerializeSound(Sound& Sfx, JsonObject & json){
  return json;
 }
 JsonObject  SerializeMesh(Mesh& Msh, JsonObject & json){
+  json["Type"]="Mesh";
+
   json["Bone"]=Msh.Bone;
   json.createNestedArray("Vertices");
   for(size_t i = 0; i < Msh.Vertices.size(); i++){
@@ -668,6 +670,8 @@ JsonObject  SerializeMesh(Mesh& Msh, JsonObject & json){
   return json;
 }
 JsonObject  SerializeAnimation(Animation& Anim, JsonObject & json){
+  json["Type"]="Animation";
+
   json.createNestedArray("Translations");
   for(size_t i =0; i < Anim.Translations.size(); i++){
     json["Translations"].add(Anim.Translations[i]);
@@ -699,6 +703,8 @@ JsonObject  SerializeAnimation(Animation& Anim, JsonObject & json){
   return json;
 }
 JsonObject  SerializeBone(Bone& Bone, JsonObject & json){
+  json["Type"]="Bone";
+  json["Root"]=Bone.Root;
   json.createNestedArray("T_Init");
   for(size_t i =0; i <3; i++){
     json["T_Init"].add(Bone.T_Init[i]);
@@ -719,13 +725,4 @@ JsonObject  SerializeBone(Bone& Bone, JsonObject & json){
   return json;
 }
 
-JsonObject  SerializeModel(Model& Mdl, JsonObject& json){
-  json["Root"]=Mdl.Root;
-  json["MeshCount"]=Mdl.Meshes.size();
-  json["BoneCount"]=Mdl.Bones.size();
-  json["AnimCount"]=Mdl.Tracks.size();
-
-
-  return json;
-}
 
