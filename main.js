@@ -62,8 +62,7 @@ scene.add(directionalLight);
 
 const tex = new THREE.DataTexture(clut, globalModel.image.width, globalModel.image.height,THREE.RGBAFormat, THREE.UnsignedShort5551Type);
 tex.needsUpdate=true;
-const material = new THREE.MeshBasicMaterial({ color: 0x444444, map:tex});
-material.side= THREE.DoubleSide;
+
 globalModel.meshes.forEach(mesh=>{
 
     const geometry = new THREE.BufferGeometry();
@@ -77,17 +76,14 @@ globalModel.meshes.forEach(mesh=>{
     geometry.setAttribute('normal', new THREE.BufferAttribute(norms, 3));
     geometry.setAttribute('uv',new THREE.BufferAttribute(uvs, 2));
 
+    const material = new THREE.ShaderMaterial();
+    material.side=THREE.DoubleSide;
+    material.DataTexture = tex;
+
     const threemsh = new THREE.Mesh(geometry,material);
 
     scene.add(threemsh);
 
-});
-
-const meshes = [];
-scene.traverse(function (object) {
-    if (object.isMesh) {
-        meshes.push(object);
-    }
 });
 
 
@@ -98,7 +94,11 @@ camera.position.z = 5;
 function animate() {
     requestAnimationFrame(animate);
 
-    // Render the scene from the perspective of the camera
+    
+    let currentGlobalTime = performance.now() / 1000.0; 
+
+    let currentFracTime = currentGlobalTime % 1.0;  
+    
     renderer.render(scene, camera);
     scene.rotateOnAxis(new THREE.Vector3(0.0,1.0,0.0),0.001);
 

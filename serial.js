@@ -1,13 +1,9 @@
-import { Quaternion,Vector3 } from "./node_modules/three/build/three.module.js";
+import { Matrix4, Quaternion,Vector3 } from "./node_modules/three/build/three.module.js";
 import { globalModel , tempMesh, tempJoint, tempAnimation} from "./globalmodel.js";
 
 let ready = false;
 
-function delay(milliseconds) {
-    return new Promise(resolve => {
-        setTimeout(resolve, milliseconds);
-    });
-}
+
 
 
 let port;
@@ -23,7 +19,7 @@ let isOpen = false;document.addEventListener('click', async () => {    if(!isOpe
         reader = decoder.readable.getReader();
         isOpen = true;
         
-         delay(1000);
+        
 
          await sendMessage();       
           
@@ -114,6 +110,20 @@ async function readLoop() {
                 tempJoint.translation = new Vector3(instr["T_Init"][0],instr["T_Init"][1],instr["T_Init"][2]);
                 tempJoint.rotation = new Quaternion(instr["R_Init"][0],instr["R_Init"][1],instr["R_Init"][2],instr["R_Init"][3]);
                 tempJoint.scale = new Vector3(instr["S_Init"][0],instr["S_Init"][1],instr["S_Init"][2]);
+                tempJoint.matrix.identity();
+                const translationMatrix = new Matrix4();
+                translationMatrix.makeTranslation(tempJoint.translation.x,tempJoint.translation.y,tempJoint.translation.z);
+                tempJoint.matrix.multiply(translationMatrix);
+                const rotationMatrix = new Matrix4();
+                rotationMatrix.makeRotationFromQuaternion(tempJoint.rotation);
+                tempJoint.matrix.multiply(rotationMatrix);
+                const scaleMatrix = new Matrix4();
+                scaleMatrix.makeScale(tempJoint.scale.x,tempJoint.scale.y,tempJoint.scale.z);
+                tempJoint.matrix.multiply(scaleMatrix);
+
+                tempJoint.inter_T= new Vector3(0.0,0.0,0.0);
+                tempJoint.inter_R = new Quaternion(0.0,1.0,0.0,0.0);
+                tempJoint.inter_S = new Vector3(1.0,1.0,1.0);
 
                 tempJoint.children = instr["Children"];
 
@@ -123,8 +133,12 @@ async function readLoop() {
                    translation:tempJoint.translation,
                    rotation:tempJoint.rotation,
                    scale:tempJoint.scale,
+                   matrix:tempJoint.matrix,
                    children: [...tempJoint.children],
-                   animations:[]
+                   animations:[],
+                   inter_T: tempJoint.inter_T,
+                   inter_R: tempJoint.inter_R,
+                   inter_S: tempJoint.inter_S,
                 });                
                 
                 tempJoint.children=[];
