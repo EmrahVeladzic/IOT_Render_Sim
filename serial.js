@@ -1,10 +1,8 @@
 import { Matrix4, Quaternion,Vector3 } from "./node_modules/three/build/three.module.js";
-import { globalModel , tempMesh, tempJoint, tempAnimation} from "./globalmodel.js";
+import {AnimationBuffer, JointBuffer , MeshBuffer} from './types.js'
+import { globalModel} from "./globalmodel.js";
 
 let ready = false;
-
-
-
 
 let port;
 let writer;
@@ -16,6 +14,7 @@ let isOpen = false;document.addEventListener('click', async () => {    if(!isOpe
         const outputDone = encoder.readable.pipeTo(port.writable);
         writer = encoder.writable.getWriter();        const decoder = new TextDecoderStream();
         const inputDone = port.readable.pipeTo(decoder.writable);
+        
         reader = decoder.readable.getReader();
         isOpen = true;
         
@@ -30,6 +29,8 @@ let isOpen = false;document.addEventListener('click', async () => {    if(!isOpe
         console.error('Error connecting to the serial port:', error);
     }
 }});
+
+
 
 async function sendMessage() {
     const message = 'R_REQ\n';
@@ -79,6 +80,8 @@ async function readLoop() {
                 await readLoop();
             }
             else if(instr["Type"]=="Mesh"){
+                let tempMesh = new MeshBuffer();
+
                 tempMesh.vertices = instr["Vertices"];
                 tempMesh.indices = instr["Indices"];
                 tempMesh.uvs = instr["UVs"];
@@ -104,6 +107,7 @@ async function readLoop() {
             }
 
             else if(instr["Type"]=="Bone"){
+                let tempJoint = new JointBuffer();
 
                 tempJoint.root = instr["Root"];
 
@@ -149,9 +153,23 @@ async function readLoop() {
             }
 
             else if (instr["Type"]=="Animation"){
-                tempAnimation.translations = instr["Translations"];
-                tempAnimation.rotations = instr["Rotations"];
-                tempAnimation.scales = instr["Scales"];
+                let tempAnimation = new AnimationBuffer();
+               
+                for (let i = 0; i < instr["Translations"].length; i += 3) {
+                    let vector = new Vector3(instr["Translations"][i], instr["Translations"][i + 1], instr["Translations"][i + 2]);
+                    tempAnimation.translations.push(vector);
+                }               
+                
+                for (let i = 0; i < instr["Rotations"].length; i += 4) {
+                    let quaternion = new Quaternion(instr["Rotations"][i], instr["Rotations"][i + 1], instr["Rotations"][i + 2], instr["Rotations"][i+3]);
+                    tempAnimation.rotations.push(quaternion);
+                }
+
+                for (let i = 0; i < instr["Scales"].length; i += 3) {
+                    let vector = new Vector3(instr["Scales"][i], instr["Scales"][i + 1], instr["Scales"][i + 2]);
+                    tempAnimation.scales.push(vector);
+                }
+               
 
                 tempAnimation.trans_times = instr["T_Times"];
                 tempAnimation.rot_times = instr ["R_Times"];

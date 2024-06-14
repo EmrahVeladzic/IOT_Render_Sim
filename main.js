@@ -1,6 +1,4 @@
-// Import necessary Three.js classes
 import * as THREE from './node_modules/three/build/three.module.js';
-import {Model,AnimationBuffer,JointBuffer,MeshBuffer,ImageBuffer,SoundBuffer} from './types.js'
 import { globalModel } from './globalmodel.js';
 import * as SERIAL from './serial.js'
 
@@ -63,31 +61,70 @@ scene.add(directionalLight);
 const tex = new THREE.DataTexture(clut, globalModel.image.width, globalModel.image.height,THREE.RGBAFormat, THREE.UnsignedShort5551Type);
 tex.needsUpdate=true;
 
-globalModel.meshes.forEach(mesh=>{
 
-    const geometry = new THREE.BufferGeometry();
-    const verts = new Float32Array(mesh.vertices);
-    const indices = new Uint16Array(mesh.indices);
-    const uvs = new Float32Array(mesh.uvs);
-    const norms = new Float32Array(mesh.normals);
+const loader = new THREE.FileLoader();
+let vertex_shader, fragment_shader;
 
-    geometry.setAttribute('position', new THREE.BufferAttribute(verts, 3));
-    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
-    geometry.setAttribute('normal', new THREE.BufferAttribute(norms, 3));
-    geometry.setAttribute('uv',new THREE.BufferAttribute(uvs, 2));
-
-    const material = new THREE.ShaderMaterial();
-    material.side=THREE.DoubleSide;
-    material.DataTexture = tex;
-
-    const threemsh = new THREE.Mesh(geometry,material);
-
-    scene.add(threemsh);
-
+loader.load('vertex.glsl', function(data) {
+    vertex_shader = data;
+   
 });
+
+loader.load('fragment.glsl', function(data) {
+    fragment_shader = data;
+    
+});
+
+const loadShader = (path) => {
+    return new Promise((resolve, reject) => {
+        loader.load(path, resolve, undefined, reject);
+    });
+};
+
+
+Promise.all([loadShader('vertex.glsl'), loadShader('fragment.glsl')])
+    .then(([vertex_shader, fragment_shader]) => {
+        globalModel.meshes.forEach(mesh => {
+
+        const j_ind = mesh.joint_index;
+        
+
+        const geometry = new THREE.BufferGeometry();
+        const verts = new Float32Array(mesh.vertices);
+        const indices = new Uint16Array(mesh.indices);
+        const uvs = new Float32Array(mesh.uvs);
+        const norms = new Float32Array(mesh.normals);
+
+        geometry.setAttribute('position', new THREE.BufferAttribute(verts, 3));
+        geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+        geometry.setAttribute('normal', new THREE.BufferAttribute(norms, 3));
+        geometry.setAttribute('uv',new THREE.BufferAttribute(uvs, 2));
+
+        const material = new THREE.ShaderMaterial();
+        material.side=THREE.DoubleSide;
+        material.DataTexture = tex;
+        material.vertexShader = vertex_shader;
+        material.fragmentShader = fragment_shader;
+
+       
+        material.uniforms = {
+
+
+        };
+
+
+        const threemsh = new THREE.Mesh(geometry,material);
+
+        scene.add(threemsh);
+
+    }
+
+)});
 
 
 camera.position.z = 5;
+
+
 
 
 // Create a function to animate our scene
@@ -97,7 +134,16 @@ function animate() {
     
     let currentGlobalTime = performance.now() / 1000.0; 
 
-    let currentFracTime = currentGlobalTime % 1.0;  
+    let currentFracTime = currentGlobalTime % 1.0; 
+
+    globalModel.interpolate_matrix(currentFracTime);
+
+    let tempMat = new THREE.Matrix4();
+    tempMat.identity();
+
+
+    globalModel.add_parent_matrix(tempMat,globalModel.root);
+ 
     
     renderer.render(scene, camera);
     scene.rotateOnAxis(new THREE.Vector3(0.0,1.0,0.0),0.001);

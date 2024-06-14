@@ -121,25 +121,40 @@ void loop() {
         if(!Img_Sent){
           ImpImage = new Image(PATH);
           PostImage(*ImpImage);
+          digitalWrite(RDY_PIN,HIGH);
+          delay(S_WAIT);
+          digitalWrite(RDY_PIN,LOW);
         }
         else if(!Sfx_Sent){
           ImpSound = new Sound(PATH);
           PostSound(*ImpSound);
+          digitalWrite(RDY_PIN,HIGH);
+          delay(S_WAIT);
+          digitalWrite(RDY_PIN,LOW);
         }
         else if(MeshIndex < ImpModel->Meshes.size()){
           PostMesh(*ImpModel);
+          digitalWrite(RDY_PIN,HIGH);
+          delay(S_WAIT);
+          digitalWrite(RDY_PIN,LOW);
         }
         else if (BoneIndex < ImpModel->Bones.size()){
           PostBone(*ImpModel);
+          digitalWrite(RDY_PIN,HIGH);
+          delay(S_WAIT);
+          digitalWrite(RDY_PIN,LOW);
         }
         else if (TrackIndex < ImpModel->Tracks.size()){
           PostTrack(*ImpModel);
+          digitalWrite(RDY_PIN,HIGH);
+          delay(S_WAIT);
+          digitalWrite(RDY_PIN,LOW);
         }
         else{
-          Ready=true;
           PostResponse(RDY);
-          delay(WAIT);
-          digitalWrite(RDY_PIN,HIGH);
+          digitalWrite(RDY_PIN,HIGH);  
+          delay(WAIT);            
+          Ready=true;      
         }
        
         Serial.write('\n');
