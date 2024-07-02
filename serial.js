@@ -88,20 +88,8 @@ async function readLoop() {
                 tempMesh.normals = instr["Normals"];
                 tempMesh.joint_index = instr["Bone"];
 
-                globalModel.meshes.push({
-                    vertices: [...tempMesh.vertices],
-                    indices: [...tempMesh.indices],
-                    uvs: [...tempMesh.uvs],
-                    normals: [...tempMesh.normals],
-                    joint_index: tempMesh.joint_index
-                });                
+                globalModel.meshes.push(tempMesh);            
                 
-                tempMesh.vertices = [];
-                tempMesh.indices = [];
-                tempMesh.uvs = [];
-                tempMesh.normals = [];
-                tempMesh.joint_index = 0;
-
                 await sendMessage();
                 await readLoop();
             }
@@ -125,27 +113,22 @@ async function readLoop() {
                 scaleMatrix.makeScale(tempJoint.scale.x,tempJoint.scale.y,tempJoint.scale.z);
                 tempJoint.matrix.multiply(scaleMatrix);
 
+                tempJoint.reset_matrix = new Matrix4().copy(tempJoint.matrix);
+
                 tempJoint.inter_T= new Vector3(0.0,0.0,0.0);
                 tempJoint.inter_R = new Quaternion(0.0,1.0,0.0,0.0);
                 tempJoint.inter_S = new Vector3(1.0,1.0,1.0);
 
                 tempJoint.children = instr["Children"];
 
+                globalModel.joints.push(tempJoint);
+            
+              
+                if(tempJoint.root){
+                    globalModel.root=globalModel.joints.length-1;
+                }
 
-                globalModel.joints.push({
-                   root : tempJoint.root,
-                   translation:tempJoint.translation,
-                   rotation:tempJoint.rotation,
-                   scale:tempJoint.scale,
-                   matrix:tempJoint.matrix,
-                   children: [...tempJoint.children],
-                   animations:[],
-                   inter_T: tempJoint.inter_T,
-                   inter_R: tempJoint.inter_R,
-                   inter_S: tempJoint.inter_S,
-                });                
-                
-                tempJoint.children=[];
+               
 
                 await sendMessage();
                 await readLoop();
@@ -168,6 +151,7 @@ async function readLoop() {
                 for (let i = 0; i < instr["Scales"].length; i += 3) {
                     let vector = new Vector3(instr["Scales"][i], instr["Scales"][i + 1], instr["Scales"][i + 2]);
                     tempAnimation.scales.push(vector);
+
                 }
                
 
@@ -178,17 +162,9 @@ async function readLoop() {
                 tempAnimation.joint_index = instr["Bone"];
 
 
-                globalModel.joints[tempAnimation.joint_index].animations.push({
-                    joint_index:tempAnimation.joint_index,
-                    translations:[...tempAnimation.translations],
-                    rotations:[...tempAnimation.rotations],
-                    scales:[...tempAnimation.scales],
+                globalModel.joints[tempAnimation.joint_index].animations.push(tempAnimation);
 
-                    trans_times:[...tempAnimation.trans_times],
-                    rot_times:[...tempAnimation.rot_times],
-                    scal_times:[...tempAnimation.scal_times],
-
-                });
+                
 
                 await sendMessage();
                 await readLoop();
@@ -202,6 +178,7 @@ async function readLoop() {
                     globalModel.current_anim = globalModel.current_anim === 0 ? 1 : 0;                    
                 }
 
+                
                 await readLoop();
             }
         }

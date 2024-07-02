@@ -17,13 +17,14 @@ async function waitForSerialReady() {
 
 waitForSerialReady().then(()=>{
 
-// Create the scene
+
 const scene = new THREE.Scene();
 
-// Create a camera, which determines what we'll see when we render the scene
+
+
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 
-// Create a renderer and attach it to our document
+
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -82,12 +83,13 @@ const loadShader = (path) => {
 };
 
 
+let SM =[];
+
 Promise.all([loadShader('vertex.glsl'), loadShader('fragment.glsl')])
     .then(([vertex_shader, fragment_shader]) => {
         globalModel.meshes.forEach(mesh => {
 
         const j_ind = mesh.joint_index;
-        
 
         const geometry = new THREE.BufferGeometry();
         const verts = new Float32Array(mesh.vertices);
@@ -106,51 +108,63 @@ Promise.all([loadShader('vertex.glsl'), loadShader('fragment.glsl')])
         material.vertexShader = vertex_shader;
         material.fragmentShader = fragment_shader;
 
-       
+
         material.uniforms = {
 
+            trans_mat : {value: globalModel.joints[j_ind].matrix},
+            samp: {value: tex}
 
+           
         };
 
 
         const threemsh = new THREE.Mesh(geometry,material);
 
         scene.add(threemsh);
+        SM.push(threemsh);
 
     }
 
 )});
 
 
-camera.position.z = 5;
+camera.position.z = 10;
+camera.position.y = 0;
 
 
 
 
-// Create a function to animate our scene
 function animate() {
     requestAnimationFrame(animate);
 
-    
-    let currentGlobalTime = performance.now() / 1000.0; 
-
-    let currentFracTime = currentGlobalTime % 1.0; 
-
-    globalModel.interpolate_matrix(currentFracTime);
-
-    let tempMat = new THREE.Matrix4();
-    tempMat.identity();
-
-
-    globalModel.add_parent_matrix(tempMat,globalModel.root);
  
+    let currentGlobalTime = performance.now() / 1000.0; 
+ 
+    globalModel.reset_pose();    
+
+    
+    globalModel.interpolate_matrix(currentGlobalTime);    
+
+
+    globalModel.add_parent_matrix(new THREE.Matrix4().identity(),globalModel.root);   
+    
+    for(let i =0; i < SM.length; i++){
+
+        SM[i].material.uniforms.trans_mat.value = globalModel.joints[globalModel.meshes[i].joint_index].matrix;
+
+    }
+
     
     renderer.render(scene, camera);
     scene.rotateOnAxis(new THREE.Vector3(0.0,1.0,0.0),0.001);
 
+    
+    
+   
+
 }
 
-// Run the animation function for the first time to kick things off
+
 animate();
 
 });

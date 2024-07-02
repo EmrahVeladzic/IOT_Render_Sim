@@ -1,24 +1,34 @@
 import { Matrix4, Quaternion,Vector3} from './node_modules/three/build/three.module.js';
 
-const INTERP_TRESHOLD = 0.99;
+const INTERP_TRESHOLD = 0.9;
 
+function transToMat(T , R, S){
+    let outM = new Matrix4().identity();
 
+    let outT = new Matrix4().identity();
+    let outR = new Matrix4().identity();
+    let outS = new Matrix4().identity();
+
+    outT.makeTranslation(T.x, T.y, T.z);
+    outR.makeRotationFromQuaternion(R);
+    outS.makeScale(S.x, S.y, S.z);
+
+    outM.multiply(outT);
+    outM.multiply(outR);
+    outM.multiply(outS);
+
+    return outM;
+}
 
 function getInterpolationValue(current, begin, end) {
     if (begin > end) {
         end += begin;
     }
 
-    let out = (current - begin) / (end - begin);
+    const range = end - begin;
+    const value = (current - begin) / range;
 
-    if (out > 1.0) {
-        out = 1.0;
-    }
-    if (out < 0.0) {
-        out = 0.0;
-    }
-
-    return out;
+    return Math.min(Math.max(value, 0.0), 1.0);
 }
 
 class AnimationBuffer{
@@ -65,6 +75,7 @@ class JointBuffer{
     inter_S;
 
     matrix;
+    reset_matrix;
 
     animations;
 
@@ -73,6 +84,9 @@ class JointBuffer{
         this.rotation = new Quaternion(0.0,1.0,0.0,0.0);
         this.scale = new Vector3(1.0,1.0,1.0);
         this.matrix = new Matrix4();
+        this.matrix.identity();
+        this.reset_matrix = new Matrix4();
+        this.reset_matrix.identity();
         this.animations= [];
         this.children=[];
         this.root=false;
@@ -151,100 +165,79 @@ class Model{
        
     }
 
+
+    reset_pose(){
+        this.joints.forEach(joint => {
+            joint.matrix = new Matrix4().copy(joint.reset_matrix);
+        });
+    }
     
-    add_parent_matrix(in_matrix, joint){
-
-        let tempMat = this.joints[joint].matrix;
-
-
-        //this.joints[joint].matrix = in_matrix.multiply(tempMat);
-
-        /*
-
-        for (let index = 0; index < this.joints[joint].children.length; index++) {
-           this.add_parent_matrix( this.joints[joint].children[index].matrix,  this.joints[joint].children[index].children[index]);    
+    add_parent_matrix(parentMatrix, joint) {
+        let newMatrix = parentMatrix.clone().multiply(this.joints[joint].matrix);
+                
+        this.joints[joint].matrix = newMatrix;
+        
+        for (let i = 0; i < this.joints[joint].children.length; i++) {
+            this.add_parent_matrix(newMatrix, this.joints[joint].children[i]);
         }
-
-        */
-
     }
 
     interpolate_matrix(in_val) {
+      
         this.joints.forEach(joint => {
-            joint.matrix.identity();
+          
+
+            let T_end = ((joint.animations[this.current_anim].T_index + 1) < joint.animations[this.current_anim].trans_times.length) ? joint.animations[this.current_anim].T_index + 1 : 0;
+
+            let T_val = getInterpolationValue(in_val, joint.animations[this.current_anim].trans_times[joint.animations[this.current_anim].T_index], joint.animations[this.current_anim].trans_times[T_end]);
+
+            let T_current = new Vector3().copy(joint.animations[this.current_anim].translations[joint.animations[this.current_anim].T_index]).lerp(joint.animations[this.current_anim].translations[T_end], T_val);
+
+            if (T_val > INTERP_TRESHOLD) {
+                joint.animations[this.current_anim].T_index++;
+                if (joint.animations[this.current_anim].T_index >= joint.animations[this.current_anim].trans_times.length) {
+                    joint.animations[this.current_anim].T_index = 0;
+                }
+            }
+
+            let R_end = ((joint.animations[this.current_anim].R_index + 1) < joint.animations[this.current_anim].rot_times.length) ? joint.animations[this.current_anim].R_index + 1 : 0;
+         
+
+            let R_val = getInterpolationValue(in_val, joint.animations[this.current_anim].rot_times[joint.animations[this.current_anim].R_index], joint.animations[this.current_anim].rot_times[R_end]);
+
+            let R_current = new Quaternion().copy(joint.animations[this.current_anim].rotations[joint.animations[this.current_anim].R_index]).slerp(joint.animations[this.current_anim].rotations[R_end], R_val);
+
+            if (R_val > INTERP_TRESHOLD) {
+                joint.animations[this.current_anim].R_index++;
+                if (joint.animations[this.current_anim].R_index >= joint.animations[this.current_anim].rot_times.length) {
+                    joint.animations[this.current_anim].R_index = 0;
+                }
+            }
+
+            let S_end = ((joint.animations[this.current_anim].S_index + 1) < joint.animations[this.current_anim].scal_times.length) ? joint.animations[this.current_anim].S_index + 1 : 0;
+
+            let S_val = getInterpolationValue(in_val, joint.animations[this.current_anim].scal_times[joint.animations[this.current_anim].S_index], joint.animations[this.current_anim].scal_times[S_end]);
+
+            let S_current = new Vector3().copy(joint.animations[this.current_anim].scales[joint.animations[this.current_anim].S_index]).lerp(joint.animations[this.current_anim].scales[S_end], S_val);
+
+            if (S_val > INTERP_TRESHOLD) {
+                joint.animations[this.current_anim].S_index++;
+                if (joint.animations[this.current_anim].S_index >= joint.animations[this.current_anim].scal_times.length) {
+                    joint.animations[this.current_anim].S_index = 0;
+                }
+            }    
+            
+            
+            let newMatrix = new Matrix4().copy(transToMat(T_current,R_current,S_current));
+
+            joint.matrix = newMatrix;
 
             
-            let animation = joint.animations[this.current_anim];
-
-            let T_next = animation.T_index == (animation.trans_times.length) ? 0 : animation.T_index + 1;
-
-            let T_Begin = animation.trans_times[animation.T_index];
-            let T_End = animation.trans_times[T_next];
-
-            let T_out = getInterpolationValue(in_val, T_Begin, T_End);
-
-            //let T_current = new Vector3().copy(animation.translations[animation.T_index]).lerp(animation.translations[T_next], T_out);
-
-            let T_current = new Vector3();
-
-            let T_Mat = new Matrix4();
-            T_Mat.makeTranslation(T_current);
-            joint.matrix.multiply(T_Mat);
-
-            if (T_out > INTERP_TRESHOLD) {
-                animation.T_index++;
-                if (animation.T_index >= animation.trans_times.length) {
-                    animation.T_index = 0;
-                }
-            }
-
-            let R_next = animation.R_index == (animation.rot_times.length) ? 0 : animation.R_index + 1;
-
-            let R_Begin = animation.rot_times[animation.R_index];
-            let R_End = animation.rot_times[R_next];
-
-            let R_out = getInterpolationValue(in_val, R_Begin, R_End);
-
-           // let R_current = new Quaternion().copy(animation.rotations[animation.R_index]).slerp(animation.rotations[R_next], R_out);
-
-            let R_current = new Quaternion();
-
-
-            let R_Mat = new Matrix4();
-            R_Mat.makeRotationFromQuaternion(R_current);
-            joint.matrix.multiply(R_Mat);
-
-            if (R_out > INTERP_TRESHOLD) {
-                animation.R_index++;
-                if (animation.R_index >= animation.rot_times.length) {
-                    animation.R_index = 0;
-                }
-            }
-
-            let S_next = animation.S_index == (animation.scal_times.length) ? 0 : animation.S_index + 1;
-
-            let S_Begin = animation.scal_times[animation.S_index];
-            let S_End = animation.scal_times[S_next];
-
-            let S_out = getInterpolationValue(in_val, S_Begin, S_End);
-
-            //let S_current = new Vector3().copy(animation.scales[animation.S_index]).lerp(animation.scales[S_next], S_out);
-
-            let S_current = new Vector3();
-
-            let S_Mat = new Matrix4();
-            S_Mat.makeScale(S_current);
-            joint.matrix.multiply(S_Mat);
-
-            if (S_out > INTERP_TRESHOLD) {
-                animation.S_index++;
-                if (animation.S_index >= animation.scal_times.length) {
-                    animation.S_index = 0;
-                }
-            }
         });
+
     }
- 
+
+    
 }
 
 export {Model,AnimationBuffer,JointBuffer,MeshBuffer,ImageBuffer,SoundBuffer} 

@@ -275,20 +275,13 @@ for (uint8_t i = 0; i < mshCount; i++)
 {
 	uvStream.read(reinterpret_cast<char*>(&tempUShort), sizeof(tempUShort));
 
-	for (uint16_t j = 0; j < tempUShort; j+=2)
+	for (uint16_t j = 0; j < tempUShort; j++)
 	{
 		uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
 		tempFloat = (float(tempUByte) / PAGE_FILE_SIZE);
 
 		tempMesh.UVs.push_back(tempFloat);
-
-		uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
-
-		tempFloat = (float(tempUByte) / PAGE_FILE_SIZE);
-
-		tempMesh.UVs.push_back(tempFloat);
-
 
 	}
 
