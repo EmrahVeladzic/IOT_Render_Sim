@@ -1,12 +1,13 @@
 #ifndef MODEL_LOADER
 #define MODEL_LOADER
 
-
+#define DEVICE "ESP_RENDERER"
+#define PATH "/sd/"
+#define LIST_FILE "assets.txt"
 #define SAMPLES_PER_BLOCK 28
 #define DIVISOR 5
 #define MIN_INT_4 -8
 #define MAX_INT_4 7
-#define PAGE_FILE_SIZE 255.0f
 const int16_t rounding_table[4] = { 2,3,7,8 };
 
 #include <vector>
@@ -14,6 +15,7 @@ const int16_t rounding_table[4] = { 2,3,7,8 };
 #include "FixedPointMath.h"
 #include <ArduinoJson.h>
 
+extern std::vector<String>allowedAssets;
 
 struct Image{
 
@@ -80,12 +82,17 @@ class Model{
 public:
 
 std::vector<Animation>Tracks;
+
 std::vector<Mesh>Meshes;
 std::vector<Bone>Bones;
 
 Model(const char* fileName);
 
 };
+
+
+JsonObject GetList(JsonObject & json);
+JsonObject Identify(JsonObject & json);
 
 
 JsonObject  SerializeImage(Image& Img, JsonObject & json);

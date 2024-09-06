@@ -1,7 +1,9 @@
+#include <string>
 #include <vector>
 #include <fstream>
 #include "ModelLoader.hpp"
 
+extern std::vector<String>allowedAssets;
 
 
 Image::Image(const char* fileName){
@@ -267,6 +269,18 @@ Model::Model(const char* fileName){
 
 uvStream.open(uvFile,std::ios::binary);
 
+uint8_t x_beg;
+uint8_t x_end;
+
+uint8_t y_beg;
+uint8_t y_end;
+
+uvStream.read(reinterpret_cast<char*>(&x_beg), sizeof(x_beg));
+uvStream.read(reinterpret_cast<char*>(&y_beg), sizeof(y_beg));
+
+uvStream.read(reinterpret_cast<char*>(&x_end), sizeof(x_end));
+uvStream.read(reinterpret_cast<char*>(&y_end), sizeof(y_end));
+
 uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
 mshCount = tempUByte;
@@ -275,11 +289,20 @@ for (uint8_t i = 0; i < mshCount; i++)
 {
 	uvStream.read(reinterpret_cast<char*>(&tempUShort), sizeof(tempUShort));
 
-	for (uint16_t j = 0; j < tempUShort; j++)
+	for (uint16_t j = 0; j < tempUShort; j+=2)
 	{
-		uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
+		
+    uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
-		tempFloat = (float(tempUByte) / PAGE_FILE_SIZE);
+    tempFloat = (float(tempUByte) / (float)(x_end-x_beg));			
+
+
+    tempMesh.UVs.push_back(tempFloat);
+
+    uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
+
+    tempFloat = (float(tempUByte) / (float)(y_end - y_beg));
+
 
 		tempMesh.UVs.push_back(tempFloat);
 
@@ -623,7 +646,7 @@ JsonObject  SerializeImage(Image& Img, JsonObject & json){
 
   json["Width"]=Img.Width;
   json["Height"]=Img.Height;
-  json.createNestedArray("Data");
+  json["Data"].to<JsonArray>();
   for(size_t i = 0; i < (Img.Width*Img.Height);i++){
     json["Data"].add(Img.Data[i]);
   }
@@ -634,7 +657,7 @@ JsonObject  SerializeSound(Sound& Sfx, JsonObject & json){
 
   json["SampleRate"]=Sfx.SampleRate;
   json["SampleCount"]=Sfx.SampleCount;
-  json.createNestedArray("Data");
+  json["Data"].to<JsonArray>();
   for(size_t i = 0; i < Sfx.SampleCount;i++){
     json["Data"].add(Sfx.Data[i]);
   }
@@ -644,19 +667,19 @@ JsonObject  SerializeMesh(Mesh& Msh, JsonObject & json){
   json["Type"]="Mesh";
 
   json["Bone"]=Msh.Bone;
-  json.createNestedArray("Vertices");
+ json["Vertices"].to<JsonArray>();
   for(size_t i = 0; i < Msh.Vertices.size(); i++){
     json["Vertices"].add(Msh.Vertices[i]);
   }
-  json.createNestedArray("Indices");
+ json["Indices"].to<JsonArray>();
   for(size_t i = 0; i < Msh.Indices.size(); i++){
     json["Indices"].add(Msh.Indices[i]);
   }
-  json.createNestedArray("UVs");
+ json["UVs"].to<JsonArray>();
   for(size_t i = 0; i < Msh.UVs.size(); i++){
     json["UVs"].add(Msh.UVs[i]);
   }
-  json.createNestedArray("Normals");
+ json["Normals"].to<JsonArray>();
   for(size_t i = 0; i < Msh.Normals.size(); i++){
     json["Normals"].add(Msh.Normals[i]);
   }
@@ -665,28 +688,28 @@ JsonObject  SerializeMesh(Mesh& Msh, JsonObject & json){
 JsonObject  SerializeAnimation(Animation& Anim, JsonObject & json){
   json["Type"]="Animation";
 
-  json.createNestedArray("Translations");
+ json["Translations"].to<JsonArray>();
   for(size_t i =0; i < Anim.Translations.size(); i++){
     json["Translations"].add(Anim.Translations[i]);
   }
-  json.createNestedArray("Rotations");
+ json["Rotations"].to<JsonArray>();
   for(size_t i =0; i < Anim.Rotations.size(); i++){
     json["Rotations"].add(Anim.Rotations[i]);
   }
-  json.createNestedArray("Scales");
+ json["Scales"].to<JsonArray>();
   for(size_t i =0; i < Anim.Scales.size(); i++){
     json["Scales"].add(Anim.Scales[i]);
   }
  
-  json.createNestedArray("T_Times");
+ json["T_Times"].to<JsonArray>();
   for(size_t i =0; i < Anim.T_Times.size(); i++){
     json["T_Times"].add(Anim.T_Times[i]);
   }
-  json.createNestedArray("R_Times");
+   json["R_Times"].to<JsonArray>();
   for(size_t i =0; i < Anim.R_Times.size(); i++){
     json["R_Times"].add(Anim.R_Times[i]);
   }
-  json.createNestedArray("S_Times");
+   json["S_Times"].to<JsonArray>();
   for(size_t i =0; i < Anim.S_Times.size(); i++){
     json["S_Times"].add(Anim.S_Times[i]);
   }
@@ -698,19 +721,19 @@ JsonObject  SerializeAnimation(Animation& Anim, JsonObject & json){
 JsonObject  SerializeBone(Bone& Bone, JsonObject & json){
   json["Type"]="Bone";
   json["Root"]=Bone.Root;
-  json.createNestedArray("T_Init");
+   json["T_Init"].to<JsonArray>();
   for(size_t i =0; i <3; i++){
     json["T_Init"].add(Bone.T_Init[i]);
   }
-  json.createNestedArray("R_Init");
+  json["R_Init"].to<JsonArray>();
   for(size_t i =0; i <4; i++){
     json["R_Init"].add(Bone.R_Init[i]);
   }
-  json.createNestedArray("S_Init");
+   json["S_Init"].to<JsonArray>();
   for(size_t i =0; i <3; i++){
     json["S_Init"].add(Bone.S_Init[i]);
   }
-  json.createNestedArray("Children");
+  json["Children"].to<JsonArray>();
   for(size_t i =0; i <Bone.Children.size(); i++){
     json["Children"].add(Bone.Children[i]);
   }
@@ -718,4 +741,34 @@ JsonObject  SerializeBone(Bone& Bone, JsonObject & json){
   return json;
 }
 
+JsonObject GetList(JsonObject & json){
 
+json["Type"]="List";
+json["Assets"].to<JsonArray>();
+std::ifstream listStream;
+
+std::string listMember;
+
+listStream.open(((std::string)PATH+(std::string)LIST_FILE).c_str());
+while(!listStream.eof()){
+
+listStream>>listMember;
+
+allowedAssets.push_back(String(listMember.c_str()));
+
+json["Assets"].add(listMember);
+
+}
+listStream.close();
+
+
+
+return json;
+}
+
+JsonObject Identify(JsonObject & json){
+
+  json["ID"]=DEVICE;
+
+  return json;
+}

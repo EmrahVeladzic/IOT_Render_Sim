@@ -9,7 +9,9 @@ Image* ImpImage;
 Sound* ImpSound;
 DynamicJsonDocument jsonDoc(2048);
 
-#define PATH "/sd/raven"
+std::vector<String>allowedAssets;
+
+String Asset;
 
 volatile byte altAnim = LOW;
 
@@ -21,7 +23,7 @@ volatile byte altAnim = LOW;
 #define ANIM_SWITCH_PIN 25
 #define RDY_PIN 14
 
-#define DEBOUNCE_TIME 200
+#define DEBOUNCE_TIME 5000
 volatile uint32_t lastTime = 0;
 
 void IRAM_ATTR AnimSwitch(){ 
@@ -37,7 +39,7 @@ void setup() {
   digitalWrite(RDY_PIN,LOW);
 
   pinMode(ANIM_SWITCH_PIN,INPUT);
-  attachInterrupt(digitalPinToInterrupt(ANIM_SWITCH_PIN), AnimSwitch, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ANIM_SWITCH_PIN), AnimSwitch, RISING);
 
   delay(WAIT);
 
@@ -46,7 +48,87 @@ void setup() {
 
   j_son = jsonDoc.to<JsonObject>();
   jsonDoc.clear();
-  
+
+  while(true){
+    if(Serial.available()){
+     
+
+      String Response = Serial.readStringUntil('\n');
+
+      if(Response.equals(LIST)){
+     
+
+        GetList(j_son);       
+        serializeJson(j_son,Serial);
+        Serial.write('\n');
+        j_son.clear();
+        jsonDoc.clear();
+
+        break;
+      }
+      else if(Response.equals(ID)){
+        Identify(j_son);
+        serializeJson(j_son,Serial);
+        Serial.write('\n');
+        j_son.clear();
+        jsonDoc.clear();
+
+      }
+      else if(Response.equals(RESET)){
+        ESP.restart();
+      }
+      else{
+        Serial.read();
+      }
+
+    }
+ }
+
+
+  while(true){
+
+    
+    if(Serial.available()){
+
+      Asset = Serial.readStringUntil('\n');
+
+      if(Asset.equals(RESET)){
+        ESP.restart();
+      }
+
+        else{
+
+          for(String st : allowedAssets){
+
+            
+
+            if(Asset.equals(st.c_str())){                          
+              allowedAssets.clear();
+              return;
+            }
+
+            while(Serial.available()){
+            Serial.read();
+          }
+
+        }
+
+
+      }
+
+      
+     
+
+      
+
+    }
+
+    
+
+  }
+
+
+
 }
 
 void PostImage(Image & img){
@@ -65,7 +147,7 @@ void PostSound(Sound & sfx){
  delete[] sfx.Data;
  j_son.clear();
  jsonDoc.clear();
- ImpModel = new Model(PATH);
+ ImpModel = new Model((PATH+Asset).c_str());
 }
 void PostMesh(Model & Owner){
  SerializeMesh(Owner.Meshes[MeshIndex],j_son);
@@ -119,14 +201,14 @@ void loop() {
       if(Response.equals(NEXT)){        
 
         if(!Img_Sent){
-          ImpImage = new Image(PATH);
+          ImpImage = new Image((PATH+Asset).c_str());
           PostImage(*ImpImage);
           digitalWrite(RDY_PIN,HIGH);
           delay(S_WAIT);
           digitalWrite(RDY_PIN,LOW);
         }
         else if(!Sfx_Sent){
-          ImpSound = new Sound(PATH);
+          ImpSound = new Sound((PATH+Asset).c_str());
           PostSound(*ImpSound);
           digitalWrite(RDY_PIN,HIGH);
           delay(S_WAIT);
@@ -160,15 +242,37 @@ void loop() {
         Serial.write('\n');
 
       }
+      else if(Response.equals(RESET)){
+        ESP.restart();
+      }
     }
   }
    
   else{
-    if(altAnim){
+    
+    if(Serial.available()){
+
+       delay(S_WAIT);
+      
+        String Response = Serial.readStringUntil('\n');
+           
+          if(Response.equals(RESET)){
+          ESP.restart();
+        } 
+
+        else{
+          while(Serial.available()){
+            Serial.read();
+          }
+        }
+      
+      }
+    else if(altAnim){
       PostResponse(SWITCH);
       altAnim=LOW;
       Serial.write('\n');
     }  
+   
   }
 
 }
