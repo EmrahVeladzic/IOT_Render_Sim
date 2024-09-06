@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting.Internal;
 using Renderer_Backend.Global;
 using Renderer_Backend.Serial;
 using System.IO.Ports;
+using static System.Net.Mime.MediaTypeNames;
 
 
 
@@ -27,9 +28,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+/*
 builder.Services.AddAuthentication(NegotiateDefaults.AuthenticationScheme)
 .AddNegotiate();
-
 
 
 
@@ -39,6 +40,8 @@ builder.Services.AddAuthorization(options =>
     // By default, all incoming requests will be authorized according to the default policy.
     options.FallbackPolicy = options.DefaultPolicy;
 });
+
+*/
 
 var app = builder.Build();
 
@@ -52,6 +55,8 @@ CancellationTokenSource tokenSRC = new CancellationTokenSource();
 
 app.Lifetime.ApplicationStarted.Register(() =>
 {
+    
+
     GlobalModel.Instance = new Renderer_Backend.Models.Model();
     Task.Run(() => Renderer.Update(tokenSRC.Token));
 });
