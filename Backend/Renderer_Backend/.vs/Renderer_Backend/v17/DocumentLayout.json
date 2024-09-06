@@ -7,16 +7,20 @@
       "RelativeMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|solutionrelative:renderer_backend\\serial\\renderer.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
+      "AbsoluteMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|c:\\users\\emrah\\documents\\github\\iot_render_sim\\backend\\renderer_backend\\renderer_backend\\global\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|solutionrelative:renderer_backend\\global\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|c:\\users\\emrah\\documents\\github\\iot_render_sim\\backend\\renderer_backend\\renderer_backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|solutionrelative:renderer_backend\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|c:\\users\\emrah\\documents\\github\\iot_render_sim\\backend\\renderer_backend\\renderer_backend\\controllers\\renderercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|solutionrelative:renderer_backend\\controllers\\renderercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|c:\\users\\emrah\\documents\\github\\iot_render_sim\\backend\\renderer_backend\\renderer_backend\\controllers\\modelcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|solutionrelative:renderer_backend\\controllers\\modelcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|c:\\users\\emrah\\documents\\github\\iot_render_sim\\backend\\renderer_backend\\renderer_backend\\controllers\\renderercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|solutionrelative:renderer_backend\\controllers\\renderercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{0EC73692-E461-4858-B634-7984BDA8A48D}|Renderer_Backend\\Renderer_Backend.csproj|c:\\users\\emrah\\documents\\github\\iot_render_sim\\backend\\renderer_backend\\renderer_backend\\models\\model.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
@@ -34,7 +38,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 3,
+          "SelectedChildIndex": 6,
           "Children": [
             {
               "$type": "Bookmark",
@@ -42,46 +46,43 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 1,
+              "Title": "Report.cs",
+              "DocumentMoniker": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Global\\Report.cs",
+              "RelativeDocumentMoniker": "Renderer_Backend\\Global\\Report.cs",
+              "ToolTip": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Global\\Report.cs",
+              "RelativeToolTip": "Renderer_Backend\\Global\\Report.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-06T11:17:36.278Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "Model.cs",
               "DocumentMoniker": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Models\\Model.cs",
               "RelativeDocumentMoniker": "Renderer_Backend\\Models\\Model.cs",
               "ToolTip": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Models\\Model.cs",
               "RelativeToolTip": "Renderer_Backend\\Models\\Model.cs",
-              "ViewState": "AgIAAF0AAAAAAAAAAAAAAGUAAAAuAAAAAAAAAA==",
+              "ViewState": "AgIAAFcAAAAAAAAAAAAuwGUAAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-06T01:12:59.166Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-06T01:12:59.166Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 4,
               "Title": "RendererController.cs",
               "DocumentMoniker": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Controllers\\RendererController.cs",
               "RelativeDocumentMoniker": "Renderer_Backend\\Controllers\\RendererController.cs",
               "ToolTip": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Controllers\\RendererController.cs",
               "RelativeToolTip": "Renderer_Backend\\Controllers\\RendererController.cs",
-              "ViewState": "AgIAAAsAAAAAAAAAAAAAwB8AAAAiAAAAAAAAAA==",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABQAAAAmAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-05T18:58:14.156Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-05T18:58:14.156Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "Renderer.cs",
-              "DocumentMoniker": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Serial\\Renderer.cs",
-              "RelativeDocumentMoniker": "Renderer_Backend\\Serial\\Renderer.cs",
-              "ToolTip": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Serial\\Renderer.cs",
-              "RelativeToolTip": "Renderer_Backend\\Serial\\Renderer.cs",
-              "ViewState": "AgIAAHMBAAAAAAAAAAAAAIUBAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-09-05T17:46:25.911Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "GlobalModel.cs",
               "DocumentMoniker": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Global\\GlobalModel.cs",
               "RelativeDocumentMoniker": "Renderer_Backend\\Global\\GlobalModel.cs",
@@ -89,8 +90,7 @@
               "RelativeToolTip": "Renderer_Backend\\Global\\GlobalModel.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAPAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-21T13:25:47.856Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-21T13:25:47.856Z"
             },
             {
               "$type": "Document",
@@ -100,23 +100,34 @@
               "RelativeDocumentMoniker": "Renderer_Backend\\Controllers\\ModelController.cs",
               "ToolTip": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Controllers\\ModelController.cs",
               "RelativeToolTip": "Renderer_Backend\\Controllers\\ModelController.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABUAAAA2AAAAAAAAAA==",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAACAAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-21T13:24:40.809Z",
+              "WhenOpened": "2024-08-21T13:24:40.809Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Renderer.cs",
+              "DocumentMoniker": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Serial\\Renderer.cs",
+              "RelativeDocumentMoniker": "Renderer_Backend\\Serial\\Renderer.cs",
+              "ToolTip": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Serial\\Renderer.cs",
+              "RelativeToolTip": "Renderer_Backend\\Serial\\Renderer.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAASwDMAAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-05T17:46:25.911Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Program.cs",
               "DocumentMoniker": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Program.cs",
               "RelativeDocumentMoniker": "Renderer_Backend\\Program.cs",
               "ToolTip": "C:\\Users\\emrah\\Documents\\GitHub\\IOT_Render_Sim\\Backend\\Renderer_Backend\\Renderer_Backend\\Program.cs",
               "RelativeToolTip": "Renderer_Backend\\Program.cs",
-              "ViewState": "AgIAAB0AAAAAAAAAAAAAADAAAAABAAAAAAAAAA==",
+              "ViewState": "AgIAACcAAAAAAAAAAAAAAC4AAAABAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-08-21T11:45:22.696Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-08-21T11:45:22.696Z"
             }
           ]
         }

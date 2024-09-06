@@ -99,6 +99,8 @@ namespace Renderer_Backend.Models
         public byte Current_Anim{ get; set; }
         public byte Anim_Count { get; set; }
 
+        public byte Root {  get; set; }
+
         public SoundBuffer? Sound{ get; set; }
         public ImageBuffer? Texture{ get; set; }
 

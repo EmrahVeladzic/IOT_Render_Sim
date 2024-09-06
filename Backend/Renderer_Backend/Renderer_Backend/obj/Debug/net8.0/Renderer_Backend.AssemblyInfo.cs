@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Renderer_Backend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+90f022c7fffad1fe8f8069da14c9b78ade93578c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8b4cd4574d01e8698b14d1dc062b3745f589751d")]
 [assembly: System.Reflection.AssemblyProductAttribute("Renderer_Backend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Renderer_Backend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

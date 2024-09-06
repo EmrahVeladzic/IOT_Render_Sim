@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Renderer_Backend.Global;
 using Renderer_Backend.Models;
+using Renderer_Backend.Serial;
 
 
 namespace Renderer_Backend.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class ModelController : ControllerBase
@@ -13,13 +16,22 @@ namespace Renderer_Backend.Controllers
         [HttpGet("Model")]
         public Model GetModel()
         {
-            return GlobalModel.Instance!;
+            if (Renderer.Ready)
+            {
+                return GlobalModel.Instance!;
+            }
+
+            else
+            {
+                return new Model();
+            }
+           
         }
 
-        [HttpGet("Anim")]
-        public byte GetCurrentAnimation()
+        [HttpGet("Status")]
+        public Report GetCurrentAnimation()
         {
-            return GlobalModel.Instance!.Current_Anim;
+            return new Report(Renderer.Ready, GlobalModel.Instance!.Current_Anim);
         }
 
     }

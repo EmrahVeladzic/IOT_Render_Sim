@@ -26,10 +26,6 @@ namespace Renderer_Backend.Controllers
             }
         }
 
-        [HttpGet("Ready")]
-        public bool Status()
-        {
-            return Renderer.Ready;
-        }
+       
     }
 }

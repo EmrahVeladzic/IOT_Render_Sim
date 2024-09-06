@@ -285,6 +285,9 @@ uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
 mshCount = tempUByte;
 
+uint16_t x_diff = (uint16_t)(x_end - x_beg) +1;
+uint16_t y_diff = (uint16_t)(y_end - y_beg) +1;
+
 for (uint8_t i = 0; i < mshCount; i++)
 {
 	uvStream.read(reinterpret_cast<char*>(&tempUShort), sizeof(tempUShort));
@@ -294,14 +297,14 @@ for (uint8_t i = 0; i < mshCount; i++)
 		
     uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
-    tempFloat = (float(tempUByte) / (float)(x_end-x_beg));			
+    tempFloat = (float(tempUByte) / (float)(x_diff));			
 
 
     tempMesh.UVs.push_back(tempFloat);
 
     uvStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
-    tempFloat = (float(tempUByte) / (float)(y_end - y_beg));
+    tempFloat = (float(tempUByte) / (float)(y_diff));
 
 
 		tempMesh.UVs.push_back(tempFloat);

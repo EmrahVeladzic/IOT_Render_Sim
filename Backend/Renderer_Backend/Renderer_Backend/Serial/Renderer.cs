@@ -230,6 +230,8 @@ namespace Renderer_Backend.Serial
                     bool.TryParse(ResponseDocument.RootElement.GetProperty("Root").ToString(), out bool rt);
                     jnt.Root = rt;
 
+                   
+
                     for (int i = 0; i < 3; i++)
                     {
                         float.TryParse(ResponseDocument.RootElement.GetProperty("T_Init")[i].ToString(), out float t);
@@ -258,6 +260,11 @@ namespace Renderer_Backend.Serial
                     }
 
                     GlobalModel.Instance!.Bones!.Add(jnt);
+
+                    if (rt)
+                    {
+                        GlobalModel.Instance!.Root = (byte)(GlobalModel.Instance!.Bones.Count-1);
+                    }
 
                 }
 
@@ -371,29 +378,45 @@ namespace Renderer_Backend.Serial
             
         }
 
-        public static void Update()
+        public static async Task Update(CancellationToken token)
         {
-            while (true)
+            while (!token.IsCancellationRequested)
             {
                 if (Ready && V_Port !=null)
                 {
-                    Response = V_Port!.ReadLine();
 
-                    ResponseDocument = JsonDocument.Parse(Response);
-
-                    if (ResponseDocument.RootElement.GetProperty("Type").ToString().Equals("Command"))
+                    try
                     {
-                        if (ResponseDocument.RootElement.GetProperty("Value").ToString().Equals(Protocol.R_S))
+                         Response = V_Port!.ReadLine();
+
+                         ResponseDocument = JsonDocument.Parse(Response);
+
+                        if (ResponseDocument.RootElement.GetProperty("Type").ToString().Equals("Command"))
                         {
-                            GlobalModel.Instance!.Current_Anim=(byte)((int)(GlobalModel.Instance!.Current_Anim+1) % (int)GlobalModel.Instance!.Anim_Count);
+                            if (ResponseDocument.RootElement.GetProperty("Value").ToString().Equals(Protocol.R_S))
+                            {
+                                GlobalModel.Instance!.Current_Anim=(byte)((int)(GlobalModel.Instance!.Current_Anim+1) % (int)GlobalModel.Instance!.Anim_Count);
 
 
+                            }
                         }
                     }
+                    
+                    catch (Exception)
+                    {
+                        Default();
+                       
+                    }
+
+                   
 
                 }
 
+                await Task.Delay(100, token);
+
             }
+
+           
         }
 
     }

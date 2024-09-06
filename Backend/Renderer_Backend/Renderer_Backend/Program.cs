@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Negotiate;
 using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.Extensions.Hosting.Internal;
+using Renderer_Backend.Global;
 using Renderer_Backend.Serial;
 using System.IO.Ports;
 
@@ -47,14 +48,18 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+CancellationTokenSource tokenSRC = new CancellationTokenSource();
 
 app.Lifetime.ApplicationStarted.Register(() =>
 {
-    Task.Run(() => Renderer.Update());
+    GlobalModel.Instance = new Renderer_Backend.Models.Model();
+    Task.Run(() => Renderer.Update(tokenSRC.Token));
 });
 
 app.Lifetime.ApplicationStopping.Register(() =>
 {
+    tokenSRC.Cancel();
+
     Renderer.V_Port!.Close();
 });
 
