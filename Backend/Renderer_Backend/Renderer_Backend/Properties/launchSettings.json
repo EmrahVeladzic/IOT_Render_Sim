@@ -1,5 +1,6 @@
 ﻿{
   "$schema": "http://json.schemastore.org/launchsettings.json",
+
   "iisSettings": {
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
@@ -14,7 +15,7 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "swagger",
-      "applicationUrl": "http://192.168.1.96:5166",
+      "applicationUrl": "http://192.168.100.161:5166",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -23,8 +24,8 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "192.168.1.96",
-      "applicationUrl": "https://192.168.1.96:7184;http://192.168.1.96:5166",
+      "launchUrl": "swagger",
+      "applicationUrl": "https://192.168.100.161:7184",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

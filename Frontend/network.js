@@ -2,14 +2,15 @@ import { globalModel, globalReport } from "./globalmodel.js";
 import { Matrix4, Quaternion,Vector3 } from "./node_modules/three/build/three.module.js";
 import {AnimationBuffer, JointBuffer, MeshBuffer} from './types.js'
 
-const base_addr = "http://192.168.1.96:";
+const base_addr = "http://192.168.100.161:";
 const port = "5166";
 const model_addr = "/api/Model/";
 const M_req = "Model";
 const R_req = "Status";
 
 
-function delay(milliseconds) {
+
+export function delay(milliseconds) {
     return new Promise(resolve => {
         setTimeout(resolve, milliseconds);
     });
@@ -39,7 +40,7 @@ async function getReportUpdate(){
 export async function waitForServerReady(){
 
   while(!globalReport.ready){
-    await delay(5000);
+    await delay(1000);
 
     
 
@@ -186,7 +187,7 @@ export async function waitForServerReady(){
     
     setInterval(() => {getReportUpdate();
     
-    }, 5000);
+    }, 1000);
 
 
 });

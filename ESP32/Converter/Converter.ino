@@ -17,13 +17,13 @@ volatile byte altAnim = LOW;
 
 #define  SD_CS_PIN  5
 #define  SD_MOSI_PIN  23
-#define  SD_MISO_PIN  19
+#define  SD_MISO_PIN  19                                                                                                        
 #define  SD_SCK_PIN  18
 
-#define ANIM_SWITCH_PIN 25
+#define ANIM_SWITCH_PIN 16
 #define RDY_PIN 14
 
-#define DEBOUNCE_TIME 5000
+#define DEBOUNCE_TIME 1000
 volatile uint32_t lastTime = 0;
 
 void IRAM_ATTR AnimSwitch(){ 
@@ -38,7 +38,7 @@ void setup() {
   pinMode(RDY_PIN,OUTPUT);
   digitalWrite(RDY_PIN,LOW);
 
-  pinMode(ANIM_SWITCH_PIN,INPUT);
+  pinMode(ANIM_SWITCH_PIN,INPUT_PULLDOWN);
   attachInterrupt(digitalPinToInterrupt(ANIM_SWITCH_PIN), AnimSwitch, RISING);
 
   delay(WAIT);

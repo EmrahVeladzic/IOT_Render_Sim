@@ -63,11 +63,9 @@ Sound::Sound(const char* fileName)
 {
   std::string sfxFile = std::string(fileName) + ".wl";
 
-  int16_t temp16 = 0;
+  uint16_t tempu16 = 0;
   uint8_t sh_val = 0;
-  int16_t old = 0;
-  int16_t older = 0;
-  int16_t oldest = 0;
+  int16_t temp16 = 0;
 
   int16_t out = 0;
 
@@ -82,93 +80,98 @@ Sound::Sound(const char* fileName)
 
   SfxStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
+  SfxStream.read(reinterpret_cast<char*>(&this->ChannelCount), sizeof(tempUByte));
+  SfxStream.read(reinterpret_cast<char*>(&this->ClampBits), sizeof(tempUByte));
+
   SfxStream.read(reinterpret_cast<char*>(&tempUInt), sizeof(tempUInt));
   this->SampleCount=(tempUInt*SAMPLES_PER_BLOCK);
 
   SfxStream.read(reinterpret_cast<char*>(&tempUShort), sizeof(tempUShort));
 
   this->SampleRate=tempUShort;
-
-
  
-
 
   this->Data = new int16_t [this->SampleCount];
 
 
 
-  for(uint32_t i =0; i< tempUInt ; i++){
+  for(size_t i =0; i< (size_t)tempUInt ; i++){
 
 
     SfxStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
-    sh_val = (tempUByte >> 4) &0xF;
 
     SfxStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
-      for(uint8_t j =0; j< (uint8_t)SAMPLES_PER_BLOCK; j+=2){
-
+    for(size_t j = 0; j< (size_t)SAMPLES_PER_BLOCK;j+=2){
+      
       SfxStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
-      temp16 = (int16_t)((tempUByte>>4) &0xF);
-
-      if (temp16 > MAX_INT_4) {
-        temp16 = 0 - (temp16 - MAX_INT_4);
+      tempu16 = (tempUByte>>4) & 0xF;
+      if (tempu16 & 0x8) {
+        tempu16 |= 0xFFF0; 
       }
 
-      else if (temp16 < MIN_INT_4) {
-        temp16 = 0 - (temp16 - MIN_INT_4);
-      }
 
-      temp16<<=sh_val;
-
-      temp16-=old;
-
-      out = 0;
-      out +=  (int16_t)((int32_t)oldest * rounding_table[0] / DIVISOR);
-      out +=  (int16_t)((int32_t)older * rounding_table[1] / DIVISOR);
-      out +=  (int16_t)((int32_t)old * rounding_table[2] / DIVISOR);
-      out +=  (int16_t)((int32_t)temp16 * rounding_table[3] / DIVISOR);
+      tempu16 *= (1<<(sh_val+this->ClampBits));
 
 
-
-      this->Data[((i*SAMPLES_PER_BLOCK)+j)]=out;
-
-      oldest=older;
-      older=old;
-      old=temp16;
+      this->Data[((i*SAMPLES_PER_BLOCK)+j)] = (int16_t)tempu16;
+            
 
 
-      temp16 = (int16_t)(tempUByte &0xF);
-
-      if (temp16 > MAX_INT_4) 
+      if (((i*SAMPLES_PER_BLOCK)+j)>=3)
       {
-        temp16 = 0 - (temp16 - MAX_INT_4);
+
+        
+        temp16 = (this->Data[((i*SAMPLES_PER_BLOCK)+j)] - this->Data[((i*SAMPLES_PER_BLOCK)+j)-3])/4;
+
+        this->Data[((i*SAMPLES_PER_BLOCK)+j)-2] += temp16;
+
+        temp16 += (temp16 /= 2);
+
+        this->Data[((i*SAMPLES_PER_BLOCK)+j)-1] += temp16;
+              
       }
 
-      else if (temp16 < MIN_INT_4) 
+
+
+      tempu16 = tempUByte & 0xF;
+      if (tempu16 & 0x8) {
+        tempu16 |= 0xFFF0; 
+      }
+
+
+      tempu16 *= (1<<(sh_val+this->ClampBits));
+
+
+      this->Data[((i*SAMPLES_PER_BLOCK)+j+1)] = (int16_t)tempu16;
+            
+
+
+      if (((i*SAMPLES_PER_BLOCK)+j+1)>=3)
       {
-        temp16 = 0 - (temp16 - MIN_INT_4);
+
+        
+        temp16 = (this->Data[((i*SAMPLES_PER_BLOCK)+j+1)] - this->Data[((i*SAMPLES_PER_BLOCK)+j)-2])/4;
+
+        this->Data[((i*SAMPLES_PER_BLOCK)+j)-1] += temp16;
+
+        temp16 += (temp16 /= 2);
+
+        this->Data[((i*SAMPLES_PER_BLOCK)+j)] += temp16;
+              
       }
 
-      temp16<<=sh_val;
 
-      temp16-=old;
 
-      out = 0;
-      out +=  (int16_t)((int32_t)oldest * rounding_table[0] / DIVISOR);
-      out +=  (int16_t)((int32_t)older * rounding_table[1] / DIVISOR);
-      out +=  (int16_t)((int32_t)old * rounding_table[2] / DIVISOR);
-      out +=  (int16_t)((int32_t)temp16 * rounding_table[3] / DIVISOR);
 
-      this->Data[((i*SAMPLES_PER_BLOCK)+j+1)]=out;
 
-      oldest=older;
-      older=old;
-      old=temp16;
 
-       
+
+
 
     }
+    
 
   }
 

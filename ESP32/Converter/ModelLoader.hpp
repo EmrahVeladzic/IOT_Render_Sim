@@ -3,7 +3,7 @@
 
 #define DEVICE "ESP_RENDERER"
 #define PATH "/sd/"
-#define LIST_FILE "assets.txt"
+#define LIST_FILE "assets.dir"
 #define SAMPLES_PER_BLOCK 28
 #define DIVISOR 5
 #define MIN_INT_4 -8
@@ -28,6 +28,10 @@ Image(const char* fileName);
 };
 
 struct Sound{
+
+uint8_t ChannelCount;
+
+uint8_t ClampBits;
 
 uint16_t SampleRate;
 

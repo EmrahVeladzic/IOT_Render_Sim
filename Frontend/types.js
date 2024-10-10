@@ -21,6 +21,7 @@ function transToMat(T , R, S){
 }
 
 function getInterpolationValue(current, begin, end) {
+    
     if (begin > end) {
         end += begin;
     }

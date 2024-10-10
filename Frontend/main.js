@@ -1,8 +1,14 @@
 import * as THREE from './node_modules/three/build/three.module.js';
 import { globalModel } from './globalmodel.js';
-import { waitForServerReady } from './network.js';
+import { waitForServerReady} from './network.js';
 
 let done = false;
+
+const audioGain = 5;
+
+let lastTime = performance.now();
+const TARGET_FPS = 60;
+const FRAME_DURATION = 1000 / TARGET_FPS; 
 
 
 document.addEventListener('click', async ()=>{
@@ -10,6 +16,9 @@ document.addEventListener('click', async ()=>{
     if(!done){
 
         done=true;
+
+
+       
 
         waitForServerReady().then(()=>{
 
@@ -27,6 +36,8 @@ document.addEventListener('click', async ()=>{
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
             
+            const listener = new THREE.AudioListener();
+            camera.add(listener);
            
 
             const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -46,8 +57,18 @@ document.addEventListener('click', async ()=>{
             source.buffer = audioBuffer;
             source.loop=true;
             
+            
+            
             source.connect(audioContext.destination);
             
+            const gainNode = audioContext.createGain();
+
+            source.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+
+            gainNode.gain.value = audioGain; 
+
             source.start();
             
             let clut = new Uint16Array(globalModel.image.width*globalModel.image.height);
@@ -144,44 +165,47 @@ document.addEventListener('click', async ()=>{
             camera.position.z = 10;
             camera.position.y = 0;
                                   
-            
+         
+
             function animate() {
-                requestAnimationFrame(animate);
-            
-             
-                let currentGlobalTime = performance.now() / 1000.0; 
-             
-                globalModel.reset_pose();    
-            
-                
-                globalModel.interpolate_matrix(currentGlobalTime);    
-            
-            
-                globalModel.add_parent_matrix(new THREE.Matrix4().identity(),globalModel.root);  
-               
-                
-                for(let i =0; i < SM.length; i++){
-            
-                    SM[i].material.uniforms.trans_mat.value = globalModel.joints[globalModel.meshes[i].joint_index].matrix;
-            
+                const currentTime = performance.now();
+                const deltaTime = currentTime - lastTime;
+
+              
+                if (deltaTime < FRAME_DURATION) {
+                    requestAnimationFrame(animate);
+                    return;
                 }
-            
-                
-                renderer.render(scene, camera);
-                scene.rotateOnAxis(new THREE.Vector3(0.0,1.0,0.0),0.001);
-            
-                
-                
+
                
-            
+                lastTime = currentTime;
+                const currentGlobalTime = currentTime / 1000.0; 
+
+               
+                globalModel.reset_pose();
+                globalModel.interpolate_matrix(currentGlobalTime);
+
+                globalModel.add_parent_matrix(new THREE.Matrix4().identity(), globalModel.root);
+
+                
+                for (let i = 0; i < SM.length; i++) {
+                    SM[i].material.uniforms.trans_mat.value = globalModel.joints[globalModel.meshes[i].joint_index].matrix;
+                }
+
+                renderer.render(scene, camera);
+                scene.rotateOnAxis(new THREE.Vector3(0.0, 1.0, 0.0), 0.001);
+
+                
+                requestAnimationFrame(animate);
             }
-            
-            
+
             
             animate();
-            
-            });
-    
+
+
+                        
+        });
+                
     
 
     }
