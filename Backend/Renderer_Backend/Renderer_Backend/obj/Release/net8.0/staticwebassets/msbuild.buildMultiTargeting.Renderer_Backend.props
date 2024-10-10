@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\Renderer_Backend.props" />
+</Project>
