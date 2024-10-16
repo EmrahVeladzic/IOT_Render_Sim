@@ -9,12 +9,14 @@ namespace Renderer_Backend.Controllers
     public class RendererController : ControllerBase
     {
         [HttpGet("Initialize")]
-        public void Init()
+        public List<string> Init()
         {
            if(Renderer.Initialize())
            {
                Renderer.PopulateAssetList();
+               
            }
+            return Renderer.Assets!;
         }
 
         [HttpGet("Select")]

@@ -106,6 +106,7 @@ namespace Renderer_Backend.Serial
         {
             V_Port!.WriteLine(Protocol.REQ_L);
             Response=V_Port.ReadLine();
+            Assets = new List<string>();
 
             ResponseDocument=JsonDocument.Parse(Response);
             
@@ -114,7 +115,7 @@ namespace Renderer_Backend.Serial
             for (int i = 0; i < AssetCount; i++)
             {
                 Assets!.Add(ResponseDocument.RootElement.GetProperty("Assets")[i].ToString());
-                Console.WriteLine(Assets![i]);
+                
             }
 
            
