@@ -37,7 +37,9 @@ namespace Renderer_Backend.Serial
 
 
         public static bool Initialize(string COM)
-        {                                  
+        {
+
+           
 
             V_Port = new SerialPort(COM);
             V_Port.BaudRate = Protocol.BAUD;                           
@@ -58,23 +60,34 @@ namespace Renderer_Backend.Serial
             
 
             Response = V_Port.ReadExisting();
-            ResponseDocument = JsonDocument.Parse(Response);
 
-            
-            
-
-            if (Protocol.R_D.Equals(ResponseDocument.RootElement.GetProperty("ID").ToString()))
+            try
             {
-               Active = true;
-               return true;
+                ResponseDocument = JsonDocument.Parse(Response);
+
+
+
+
+                if (Protocol.R_D.Equals(ResponseDocument.RootElement.GetProperty("ID").ToString()))
+                {
+                    Active = true;
+                    return true;
+                }
+
+                else
+                {
+                    V_Port.Close();
+                    return false;
+                }
+
             }
 
-            else
-            {
+            catch {
+
                 V_Port.Close();
                 return false;
+            
             }
-
            
         }
 

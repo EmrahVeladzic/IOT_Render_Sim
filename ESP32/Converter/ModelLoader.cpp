@@ -338,7 +338,7 @@ Model::Model(const char* fileName){
 
         uint8_t TRS_Count =tempUByte;
 
-        for(uint8_t k = 0; k< TRS_Count; TRS_Count++){
+        for(uint8_t k = 0; k< TRS_Count; k++){
 
           AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
@@ -367,7 +367,7 @@ Model::Model(const char* fileName){
 
         AstStream.read(reinterpret_cast<char*>(&TRS_Count), sizeof(tempUByte));
         
-        for(uint8_t k = 0; k< TRS_Count; TRS_Count++){
+        for(uint8_t k = 0; k< TRS_Count; k++){
 
           AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
@@ -394,9 +394,9 @@ Model::Model(const char* fileName){
 
         }
 
-                AstStream.read(reinterpret_cast<char*>(&TRS_Count), sizeof(tempUByte));
+        AstStream.read(reinterpret_cast<char*>(&TRS_Count), sizeof(tempUByte));
         
-        for(uint8_t k = 0; k< TRS_Count; TRS_Count++){
+        for(uint8_t k = 0; k< TRS_Count; k++){
 
           AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
