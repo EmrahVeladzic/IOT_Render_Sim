@@ -93,3 +93,7 @@ C:\Users\GarazaComputers\Documents\GitHub\IOT_Render_Sim\Backend\Renderer_Backen
 C:\Users\GarazaComputers\Documents\GitHub\IOT_Render_Sim\Backend\Renderer_Backend\Renderer_Backend\obj\Debug\net8.0\Renderer_Backend.pdb
 C:\Users\GarazaComputers\Documents\GitHub\IOT_Render_Sim\Backend\Renderer_Backend\Renderer_Backend\obj\Debug\net8.0\Renderer_Backend.genruntimeconfig.cache
 C:\Users\GarazaComputers\Documents\GitHub\IOT_Render_Sim\Backend\Renderer_Backend\Renderer_Backend\obj\Debug\net8.0\ref\Renderer_Backend.dll
+C:\Users\emrah\Documents\GitHub\IOT_Render_Sim\Backend\Renderer_Backend\Renderer_Backend\bin\Debug\net8.0\Renderer_Backend.staticwebassets.endpoints.json
+C:\Users\emrah\Documents\GitHub\IOT_Render_Sim\Backend\Renderer_Backend\Renderer_Backend\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\emrah\Documents\GitHub\IOT_Render_Sim\Backend\Renderer_Backend\Renderer_Backend\obj\Debug\net8.0\staticwebassets\msbuild.Renderer_Backend.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+C:\Users\emrah\Documents\GitHub\IOT_Render_Sim\Backend\Renderer_Backend\Renderer_Backend\obj\Debug\net8.0\staticwebassets.upToDateCheck.txt
