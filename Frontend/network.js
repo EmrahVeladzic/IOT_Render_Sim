@@ -65,7 +65,7 @@ export async function waitForServerReady(){
 
   await fetch(base_addr+port+model_addr+M_req).then($response=>$response.json()).then($data=>{
 
-    console.log($data);
+  console.log($data);
 
 
     for(var i =0; i < $data.meshes.length;i++){
@@ -79,7 +79,7 @@ export async function waitForServerReady(){
 
         globalModel.meshes.push(ms);
 
-     
+        
 
     }
 

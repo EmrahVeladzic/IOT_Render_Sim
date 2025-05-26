@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 
 in vec2 tc;
 uniform sampler2D samp;

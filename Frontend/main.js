@@ -2,6 +2,7 @@ import * as THREE from './node_modules/three/build/three.module.js';
 import { globalModel } from './globalmodel.js';
 import { waitForServerReady} from './network.js';
 
+
 let done = false;
 
 const audioGain = 5;
@@ -26,7 +27,7 @@ document.addEventListener('click', async ()=>{
             
 
             const scene = new THREE.Scene();
-            
+        
             
             
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -80,6 +81,8 @@ document.addEventListener('click', async ()=>{
                 clut[i]=tempCLR;
             }
             
+        
+
             const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
             directionalLight.position.set(1, 1, 1).normalize();
             scene.add(directionalLight);
@@ -87,27 +90,26 @@ document.addEventListener('click', async ()=>{
             const tex = new THREE.DataTexture(clut, globalModel.image.width, globalModel.image.height,THREE.RGBAFormat, THREE.UnsignedShort5551Type);
             tex.needsUpdate=true;
             
-            
+                tex.minFilter = THREE.NearestFilter; 
+            tex.magFilter = THREE.NearestFilter; 
+            tex.wrapS = THREE.ClampToEdgeWrapping;
+            tex.wrapT = THREE.ClampToEdgeWrapping;
+
+
             const loader = new THREE.FileLoader();
             let vertex_shader, fragment_shader;
             
-            loader.load('vertex.glsl', function(data) {
-                vertex_shader = data;
-               
-            });
-            
-            loader.load('fragment.glsl', function(data) {
-                fragment_shader = data;
-                
-            });
-            
             const loadShader = (path) => {
-                return new Promise((resolve, reject) => {
-                    loader.load(path, resolve, undefined, reject);
-                });
-            };
-            
+    return new Promise((resolve, reject) => {
+        loader.load(path, resolve, undefined, reject);
+    });
+};
 
+
+Promise.all([loadShader('vertex.glsl'), loadShader('fragment.glsl')])
+    .then(([vertex_shader, fragment_shader]) => {
+       
+    });
             
             let SM =[];
 
@@ -125,6 +127,7 @@ document.addEventListener('click', async ()=>{
                     const uvs = new Float32Array(mesh.uvs);
                     const norms = new Float32Array(mesh.normals);
 
+                       
                     
                     geometry.setAttribute('position', new THREE.BufferAttribute(verts, 3));
                     geometry.setIndex(new THREE.BufferAttribute(indices, 1));

@@ -42,10 +42,19 @@ namespace Renderer_Backend.Serial
            
 
             V_Port = new SerialPort(COM);
-            V_Port.BaudRate = Protocol.BAUD;                           
-           
+            V_Port.BaudRate = Protocol.BAUD;
 
-            V_Port.Open();
+
+            try
+            {
+
+                V_Port.Open();
+
+            }
+            catch
+            {
+                return false;
+            }
 
             Reset();
 

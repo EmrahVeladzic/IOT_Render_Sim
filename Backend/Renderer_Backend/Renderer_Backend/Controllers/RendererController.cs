@@ -20,11 +20,21 @@ namespace Renderer_Backend.Controllers
         }
 
         [HttpGet("Select")]
-        public void Select(string ast)
+        public void Select(string ast = "DEFAULT")
         {
-            if (Renderer.Active)
+            if (Renderer.Active && Renderer.Assets!=null && Renderer.Assets.Count()>0)
             {
-                Renderer.RequestAsset(ast);
+                if (Renderer.Assets!.Contains(ast))
+                {
+                    Renderer.RequestAsset(ast);
+                }
+
+                else
+                {
+                    Renderer.RequestAsset(Renderer.Assets[0]);
+                }
+
+                
             }
         }
 

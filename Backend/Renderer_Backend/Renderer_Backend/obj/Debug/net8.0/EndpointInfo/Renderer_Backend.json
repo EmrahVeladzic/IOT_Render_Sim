@@ -77,7 +77,8 @@
             "name": "ast",
             "in": "query",
             "schema": {
-              "type": "string"
+              "type": "string",
+              "default": "DEFAULT"
             }
           }
         ],
