@@ -10,7 +10,7 @@ void main() {
 
     if(out_c.a==0.0){
       
-       //discard;
+      // discard;
     }
 
     gl_FragColor = out_c;

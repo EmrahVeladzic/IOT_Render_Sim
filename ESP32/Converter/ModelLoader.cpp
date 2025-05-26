@@ -98,6 +98,8 @@ Sound::Sound(const char* fileName)
 
     SfxStream.read(reinterpret_cast<char*>(&sh_val), sizeof(tempUByte));
 
+    sh_val>>=4;
+
     SfxStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
     for(size_t j = 0; j< (size_t)SAMPLES_PER_BLOCK;j+=2){
@@ -222,12 +224,12 @@ Model::Model(const char* fileName){
 
     AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 	
-    tempMsh.UVs.push_back(((float(tempUByte) * ((float)x_diff / (float)(x_diff - 1))) / (float)(x_diff)));
+    tempMsh.UVs.push_back(((float(tempUByte) * ((float)x_diff / (float)(x_diff - 1))) / (float)(x_diff))-(0.5f/(float)x_diff));
 
     AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 	  
 
-    tempMsh.UVs.push_back(((float(tempUByte) * ((float)y_diff / (float)(y_diff - 1))) / (float)(y_diff)));
+    tempMsh.UVs.push_back(((float(tempUByte) * ((float)y_diff / (float)(y_diff - 1))) / (float)(y_diff))+(0.5f/(float)y_diff));
 
 
 
