@@ -181,8 +181,8 @@ Model::Model(const char* fileName){
   AstStream.read(reinterpret_cast<char*>(&x_end), sizeof(tempUByte));
   AstStream.read(reinterpret_cast<char*>(&y_end), sizeof(tempUByte));
 
-	uint16_t x_diff = (uint16_t)(x_end - x_beg) + 1;
-	uint16_t y_diff = (uint16_t)(y_end - y_beg) + 1;
+	uint8_t x_diff = (uint8_t)(x_end - x_beg);
+	uint8_t y_diff = (uint8_t)(y_end - y_beg);
 
   AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 
@@ -224,13 +224,11 @@ Model::Model(const char* fileName){
 
     AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
 	
-    tempMsh.UVs.push_back(((float(tempUByte) * ((float)x_diff / (float)(x_diff - 1))) / (float)(x_diff))-(0.5f/(float)x_diff));
+    tempMsh.UVs.push_back(float(tempUByte)/float(x_diff) - 0.5f/(float(x_diff)+1.0f));
 
-    AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));
-	  
+    AstStream.read(reinterpret_cast<char*>(&tempUByte), sizeof(tempUByte));	  
 
-    tempMsh.UVs.push_back(((float(tempUByte) * ((float)y_diff / (float)(y_diff - 1))) / (float)(y_diff))+(0.5f/(float)y_diff));
-
+   tempMsh.UVs.push_back(float(tempUByte)/float(y_diff) + 0.5f/(float(y_diff)+1.0f));
 
 
   }

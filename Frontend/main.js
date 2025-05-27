@@ -5,7 +5,7 @@ import { waitForServerReady} from './network.js';
 
 let done = false;
 
-const audioGain = 5;
+const audioGain = 1;
 
 let lastTime = performance.now();
 const TARGET_FPS = 60;
