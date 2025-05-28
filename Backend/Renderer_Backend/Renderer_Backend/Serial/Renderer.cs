@@ -35,7 +35,6 @@ namespace Renderer_Backend.Serial
         public static bool Ready { get; set; }
         public static bool Active { get; set; }
 
-
         public static bool Initialize(string COM)
         {
 
@@ -148,6 +147,7 @@ namespace Renderer_Backend.Serial
 
         public static void RequestData()
         {
+
             while (true) {
 
                 V_Port!.WriteLine(Protocol.REQ_N);

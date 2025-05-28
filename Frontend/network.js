@@ -2,8 +2,8 @@ import { globalModel, globalReport } from "./globalmodel.js";
 import { Matrix4, Quaternion,Vector3 } from "./node_modules/three/build/three.module.js";
 import {AnimationBuffer, JointBuffer, MeshBuffer} from './types.js'
 
-const base_addr = "http://localhost:";
-const port = "7184";
+const base_addr = "http://192.168.1.217:";
+const port = "9438";
 const model_addr = "/api/Model/";
 const M_req = "Model";
 const R_req = "Status";

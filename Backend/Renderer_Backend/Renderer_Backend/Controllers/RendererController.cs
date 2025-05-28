@@ -24,9 +24,11 @@ namespace Renderer_Backend.Controllers
         {
             if (Renderer.Active && Renderer.Assets!=null && Renderer.Assets.Count()>0)
             {
-                if (Renderer.Assets!.Contains(ast))
+                string Asset_Select = ast.ToUpper();
+
+                if (Renderer.Assets!.Contains(Asset_Select))
                 {
-                    Renderer.RequestAsset(ast);
+                    Renderer.RequestAsset(Asset_Select);
                 }
 
                 else
