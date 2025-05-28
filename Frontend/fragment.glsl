@@ -1,4 +1,4 @@
-precision mediump float;
+precision highp float;
 
 in vec2 tc;
 uniform sampler2D samp;
@@ -10,7 +10,7 @@ void main() {
 
     if(out_c.a==0.0){
       
-       discard;
+      discard;
     }
 
     gl_FragColor = out_c;

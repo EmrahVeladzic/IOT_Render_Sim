@@ -1,11 +1,1 @@
-{
-  "Version": 1,
-  "Hash": "ZrveSpDYqWDbtwXZeXnwkY3fPWPP6e3AGmwMSK5d4fU=",
-  "Source": "Renderer_Backend",
-  "BasePath": "_content/Renderer_Backend",
-  "Mode": "Default",
-  "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
-  "Assets": []
-}
+{"Version":1,"Hash":"DHumV78TS6RPGHJ9pfOzhCJJo4D5hryBB9ALNOF03jk=","Source":"Renderer_Backend","BasePath":"_content/Renderer_Backend","Mode":"Default","ManifestType":"Build","ReferencedProjectsConfiguration":[],"DiscoveryPatterns":[],"Assets":[],"Endpoints":[]}

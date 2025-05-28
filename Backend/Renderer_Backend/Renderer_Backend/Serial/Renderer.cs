@@ -35,15 +35,25 @@ namespace Renderer_Backend.Serial
         public static bool Ready { get; set; }
         public static bool Active { get; set; }
 
-
         public static bool Initialize(string COM)
-        {                                  
+        {
 
-            V_Port = new SerialPort(COM);
-            V_Port.BaudRate = Protocol.BAUD;                           
            
 
-            V_Port.Open();
+            V_Port = new SerialPort(COM);
+            V_Port.BaudRate = Protocol.BAUD;
+
+
+            try
+            {
+
+                V_Port.Open();
+
+            }
+            catch
+            {
+                return false;
+            }
 
             Reset();
 
@@ -58,23 +68,34 @@ namespace Renderer_Backend.Serial
             
 
             Response = V_Port.ReadExisting();
-            ResponseDocument = JsonDocument.Parse(Response);
 
-            
-            
-
-            if (Protocol.R_D.Equals(ResponseDocument.RootElement.GetProperty("ID").ToString()))
+            try
             {
-               Active = true;
-               return true;
+                ResponseDocument = JsonDocument.Parse(Response);
+
+
+
+
+                if (Protocol.R_D.Equals(ResponseDocument.RootElement.GetProperty("ID").ToString()))
+                {
+                    Active = true;
+                    return true;
+                }
+
+                else
+                {
+                    V_Port.Close();
+                    return false;
+                }
+
             }
 
-            else
-            {
+            catch {
+
                 V_Port.Close();
                 return false;
+            
             }
-
            
         }
 
@@ -126,6 +147,7 @@ namespace Renderer_Backend.Serial
 
         public static void RequestData()
         {
+
             while (true) {
 
                 V_Port!.WriteLine(Protocol.REQ_N);
@@ -134,92 +156,48 @@ namespace Renderer_Backend.Serial
 
                 if (ResponseDocument.RootElement.GetProperty("Type").ToString().Equals("Texture"))
                 {
-                    UInt16.TryParse(ResponseDocument.RootElement.GetProperty("Width").ToString(),out UInt16 W);
-                    GlobalModel.Instance!.Texture!.Width = W;
+                   
+                    GlobalModel.Instance!.Texture!.Width = ResponseDocument.RootElement.GetProperty("Width").GetUInt16();
 
-                    UInt16.TryParse(ResponseDocument.RootElement.GetProperty("Height").ToString(), out UInt16 H);
-                    GlobalModel.Instance!.Texture!.Height = H;
+                    GlobalModel.Instance!.Texture!.Height = ResponseDocument.RootElement.GetProperty("Height").GetUInt16();
 
-                    int d_l = ResponseDocument.RootElement.GetProperty("Data").GetArrayLength();
-
-                    List<UInt16> d = new List<UInt16>();
-
-                    for (int i = 0; i < d_l; i++)
-                    {
-                        UInt16.TryParse(ResponseDocument.RootElement.GetProperty("Data")[i].ToString(), out UInt16 DT);
-                        d.Add(DT);
-                    }
-
-                    GlobalModel.Instance!.Texture!.Data = d.ToList();
+                    GlobalModel.Instance!.Texture!.Data = ResponseDocument.RootElement
+                    .GetProperty("Data")
+                    .EnumerateArray()
+                    .Select(element => element.GetUInt16())
+                    .ToList();
                 }
 
 
                 else if (ResponseDocument.RootElement.GetProperty("Type").ToString().Equals("SFX"))
                 {
-                    UInt16.TryParse(ResponseDocument.RootElement.GetProperty("SampleRate").ToString(), out UInt16 SR);
-                    GlobalModel.Instance!.Sound!.Sample_Rate = SR;
+                   
+                    GlobalModel.Instance!.Sound!.Sample_Rate = ResponseDocument.RootElement.GetProperty("SampleRate").GetUInt16();
 
-                    UInt32.TryParse(ResponseDocument.RootElement.GetProperty("SampleCount").ToString(), out UInt32 SC);
-                    GlobalModel.Instance!.Sound!.Sample_Count = SC;
 
-                    int d_l = ResponseDocument.RootElement.GetProperty("Data").GetArrayLength();
+                    GlobalModel.Instance!.Sound!.Sample_Count = ResponseDocument.RootElement.GetProperty("SampleCount").GetUInt32();
 
-                    List<Int16> d = new List<Int16>();
+                  
 
-                    for (int i = 0; i < d_l; i++)
-                    {
-                        Int16.TryParse(ResponseDocument.RootElement.GetProperty("Data")[i].ToString(), out Int16 DT);
-                        d.Add(DT);
-                    }
-
-                    GlobalModel.Instance!.Sound!.Samples = d.ToList();
+                    GlobalModel.Instance!.Sound!.Samples = ResponseDocument.RootElement.GetProperty("Data").EnumerateArray().Select(element => element.GetInt16()).ToList();
                 }
 
 
                 else if (ResponseDocument.RootElement.GetProperty("Type").ToString().Equals("Mesh"))
                 {
-                    MeshBuffer msh = new MeshBuffer();
+                    MeshBuffer msh = new MeshBuffer();                   
 
-                    byte.TryParse(ResponseDocument.RootElement.GetProperty("Bone").ToString(),out byte bn);
+                    msh.Joint_Index = ResponseDocument.RootElement.GetProperty("Bone").GetByte();
 
-                    msh.Joint_Index = bn;
+                    msh.Vertices = ResponseDocument.RootElement.GetProperty("Vertices").EnumerateArray().Select(element => element.GetSingle()).ToList();
+                    
+                    msh.Indices = ResponseDocument.RootElement.GetProperty("Indices").EnumerateArray().Select(element => element.GetUInt16()).ToList();
 
-                    int v_l = ResponseDocument.RootElement.GetProperty("Vertices").GetArrayLength();                                        
+                    msh.UVs = ResponseDocument.RootElement.GetProperty("UVs").EnumerateArray().Select(element => element.GetSingle()).ToList();
 
-                    for (int i = 0; i < v_l; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("Vertices")[i].ToString(), out float v_f);
-                        msh.Vertices!.Add(v_f);
+                    msh.Normals = ResponseDocument.RootElement.GetProperty("Normals").EnumerateArray().Select(element => element.GetSingle()).ToList();
 
-                    }
-
-                    int u_l = ResponseDocument.RootElement.GetProperty("UVs").GetArrayLength();
-
-                    for (int i = 0; i < u_l; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("UVs")[i].ToString(), out float u_f);
-                        msh.UVs!.Add(u_f);
-
-                    }
-
-                    int n_l = ResponseDocument.RootElement.GetProperty("Normals").GetArrayLength();
-
-                    for (int i = 0; i < n_l; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("Normals")[i].ToString(), out float n_f);
-                        msh.Normals!.Add(n_f);
-
-                    }
-
-                    int i_l = ResponseDocument.RootElement.GetProperty("Indices").GetArrayLength();
-
-                    for (int i = 0; i < i_l; i++)
-                    {
-                        UInt16.TryParse(ResponseDocument.RootElement.GetProperty("Indices")[i].ToString(), out UInt16 i_i);
-                        msh.Indices!.Add(i_i);
-
-                    }
-
+                
 
                     GlobalModel.Instance!.Meshes!.Add(msh);
                 }
@@ -227,42 +205,21 @@ namespace Renderer_Backend.Serial
                 else if (ResponseDocument.RootElement.GetProperty("Type").ToString().Equals("Bone"))
                 {
                     JointBuffer jnt = new JointBuffer();
+               
+                    jnt.Root = ResponseDocument.RootElement.GetProperty("Root").GetBoolean();
 
-                    bool.TryParse(ResponseDocument.RootElement.GetProperty("Root").ToString(), out bool rt);
-                    jnt.Root = rt;
+                    jnt.Translation = ResponseDocument.RootElement.GetProperty("T_Init").EnumerateArray().Select(element => element.GetSingle()).ToList();
 
-                   
+                    jnt.Rotation = ResponseDocument.RootElement.GetProperty("R_Init").EnumerateArray().Select(element => element.GetSingle()).ToList();
 
-                    for (int i = 0; i < 3; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("T_Init")[i].ToString(), out float t);
-                        jnt.Translation.Add(t);
-                    
-                    }
+                    jnt.Scale = ResponseDocument.RootElement.GetProperty("S_Init").EnumerateArray().Select(element => element.GetSingle()).ToList();
 
-                    for (int i = 0; i < 4; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("R_Init")[i].ToString(), out float r);
-                        jnt.Rotation.Add(r);
-                    }
+                    jnt.Children = ResponseDocument.RootElement.GetProperty("Children").EnumerateArray().Select(element => element.GetByte()).ToList(); 
 
-                    for (int i = 0; i < 3; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("S_Init")[i].ToString(), out float s);
-                        jnt.Scale.Add(s);
-                    }
-
-                    int chd = ResponseDocument.RootElement.GetProperty("Children").GetArrayLength();
-
-                    for (int i = 0; i < chd; i++)
-                    {
-                        byte.TryParse(ResponseDocument.RootElement.GetProperty("Children")[i].ToString(), out byte c);
-                        jnt.Children!.Add(c);
-                    }
-
+                  
                     GlobalModel.Instance!.Bones!.Add(jnt);
 
-                    if (rt)
+                    if (jnt.Root)
                     {
                         GlobalModel.Instance!.Root = (byte)(GlobalModel.Instance!.Bones.Count-1);
                     }
@@ -271,52 +228,18 @@ namespace Renderer_Backend.Serial
 
                 else if (ResponseDocument.RootElement.GetProperty("Type").ToString().Equals("Animation"))
                 {
-                    AnimationBuffer anm = new AnimationBuffer();
+                    AnimationBuffer anm = new AnimationBuffer();             
 
-                    byte.TryParse(ResponseDocument.RootElement.GetProperty("Bone").ToString(),out byte bn);
+                    anm.Joint_Index = ResponseDocument.RootElement.GetProperty("Bone").GetByte();
 
-                    anm.Joint_Index = bn;
+                    anm.Trans_Times = ResponseDocument.RootElement.GetProperty("T_Times").EnumerateArray().Select(element => element.GetSingle()).ToList();
+                    anm.Rot_Times = ResponseDocument.RootElement.GetProperty("R_Times").EnumerateArray().Select(element => element.GetSingle()).ToList();
+                    anm.Scal_Times = ResponseDocument.RootElement.GetProperty("S_Times").EnumerateArray().Select(element => element.GetSingle()).ToList();
 
-                    int t = ResponseDocument.RootElement.GetProperty("T_Times").GetArrayLength();
-                    int r = ResponseDocument.RootElement.GetProperty("R_Times").GetArrayLength();
-                    int s = ResponseDocument.RootElement.GetProperty("S_Times").GetArrayLength();
+                    anm.Translations = ResponseDocument.RootElement.GetProperty("Translations").EnumerateArray().Select(element => element.GetSingle()).ToList();
+                    anm.Rotations = ResponseDocument.RootElement.GetProperty("Rotations").EnumerateArray().Select(element => element.GetSingle()).ToList();
+                    anm.Scales = ResponseDocument.RootElement.GetProperty("Scales").EnumerateArray().Select(element => element.GetSingle()).ToList();
 
-                    for(int i = 0; i < t; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("T_Times")[i].ToString(), out float tt);
-                        anm.Trans_Times!.Add(tt);
-                    }
-
-                    for (int i = 0; i < r; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("R_Times")[i].ToString(), out float rt);
-                        anm.Rot_Times!.Add(rt);
-                    }
-
-                    for (int i = 0; i < s; i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("S_Times")[i].ToString(), out float st);
-                        anm.Scal_Times!.Add(st);
-                    }
-
-
-                    for (int i = 0; i < (t * 3); i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("Translations")[i].ToString(), out float tr);
-                        anm.Translations!.Add(tr);
-                    }
-
-                    for (int i = 0; i < (r * 4); i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("Rotations")[i].ToString(), out float ro);
-                        anm.Rotations!.Add(ro);
-                    }
-
-                    for (int i = 0; i < (s * 3); i++)
-                    {
-                        float.TryParse(ResponseDocument.RootElement.GetProperty("Scales")[i].ToString(), out float sc);
-                        anm.Scales!.Add(sc);
-                    }
 
 
                     GlobalModel.Instance!.Bones![anm.Joint_Index]!.Animations!.Add(anm);

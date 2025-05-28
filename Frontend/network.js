@@ -2,8 +2,8 @@ import { globalModel, globalReport } from "./globalmodel.js";
 import { Matrix4, Quaternion,Vector3 } from "./node_modules/three/build/three.module.js";
 import {AnimationBuffer, JointBuffer, MeshBuffer} from './types.js'
 
-const base_addr = "http://172.27.16.1:";
-const port = "5166";
+const base_addr = "http://192.168.1.217:";
+const port = "9438";
 const model_addr = "/api/Model/";
 const M_req = "Model";
 const R_req = "Status";
@@ -49,7 +49,7 @@ export async function waitForServerReady(){
         globalReport.ready = $data.ready;
         globalReport.anim = $data.anim;
 
-       
+      
 
 
     });
@@ -67,7 +67,6 @@ export async function waitForServerReady(){
 
 
 
-
     for(var i =0; i < $data.meshes.length;i++){
         var ms = new MeshBuffer();
 
@@ -79,7 +78,7 @@ export async function waitForServerReady(){
 
         globalModel.meshes.push(ms);
 
-     
+        
 
     }
 

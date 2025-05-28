@@ -3,12 +3,9 @@
 
 #define DEVICE "ESP_RENDERER"
 #define PATH "/sd/"
-#define LIST_FILE "assets.dir"
+#define LIST_FILE "ASSETS.DIR"
 #define SAMPLES_PER_BLOCK 28
-#define DIVISOR 5
-#define MIN_INT_4 -8
-#define MAX_INT_4 7
-const int16_t rounding_table[4] = { 2,3,7,8 };
+
 
 #include <vector>
 #include <fstream>
@@ -86,9 +83,9 @@ class Model{
 public:
 
 std::vector<Animation>Tracks;
-
 std::vector<Mesh>Meshes;
 std::vector<Bone>Bones;
+
 
 Model(const char* fileName);
 

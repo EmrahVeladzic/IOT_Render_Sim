@@ -14,24 +14,24 @@ namespace Renderer_Backend.Controllers
     public class ModelController : ControllerBase
     {
         [HttpGet("Model")]
-        public Model GetModel()
+        public IActionResult GetModel()
         {
             if (Renderer.Ready)
             {
-                return GlobalModel.Instance!;
+                return StatusCode(200,GlobalModel.Instance!);
             }
 
             else
             {
-                return new Model();
+                return StatusCode(200,new Model());
             }
            
         }
 
         [HttpGet("Status")]
-        public Report GetCurrentAnimation()
+        public IActionResult GetCurrentAnimation()
         {
-            return new Report(Renderer.Ready, GlobalModel.Instance!.Current_Anim);
+            return StatusCode(200,new Report(Renderer.Ready, GlobalModel.Instance!.Current_Anim));
         }
 
     }
